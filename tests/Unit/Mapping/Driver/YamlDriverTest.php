@@ -16,8 +16,10 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
         $metadata = \Mockery::mock('RAPL\RAPL\Mapping\ClassMetadata');
         $metadata->shouldReceive('setFormat')->withArgs(array('json'))->once();
 
-        $metadata->shouldReceive('setRoute')->withArgs(array('resource', \Mockery::type('RAPL\RAPL\Mapping\Route')))->once();
-        $metadata->shouldReceive('setRoute')->withArgs(array('collection', \Mockery::type('RAPL\RAPL\Mapping\Route')))->once();
+        $metadata->shouldReceive('setRoute')->withArgs(array('resource', \Mockery::type('RAPL\RAPL\Mapping\Route')))
+            ->once();
+        $metadata->shouldReceive('setRoute')->withArgs(array('collection', \Mockery::type('RAPL\RAPL\Mapping\Route')))
+            ->once();
 
         $metadata->shouldReceive('mapField')->withArgs(
             array(

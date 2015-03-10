@@ -7,7 +7,6 @@ use Mockery\MockInterface;
 use RAPL\RAPL\Connection\Connection;
 use RAPL\RAPL\EntityManager;
 use RAPL\RAPL\Mapping\ClassMetadata;
-use RAPL\RAPL\Routing\RouterInterface;
 use RAPL\RAPL\UnitOfWork;
 use RAPL\Tests\Fixtures\Entities\Author;
 
@@ -26,7 +25,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->manager = \Mockery::mock('RAPL\RAPL\EntityManager');
-        $router  = \Mockery::mock('RAPL\RAPL\Routing\RouterInterface');
+        $router        = \Mockery::mock('RAPL\RAPL\Routing\RouterInterface');
 
         $this->unitOfWork = new UnitOfWork($this->manager, $router);
     }
@@ -42,7 +41,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $manager->shouldReceive('getClassMetadata')->withArgs(array($className))->andReturn($classMetadata)->once();
         $manager->shouldReceive('getConnection')->andReturn($connection)->once();
 
-        $router  = \Mockery::mock('RAPL\RAPL\Routing\RouterInterface');
+        $router = \Mockery::mock('RAPL\RAPL\Routing\RouterInterface');
 
         $unitOfWork = new UnitOfWork($manager, $router);
 
