@@ -20,10 +20,13 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
 
         $manager->shouldReceive('getUnitOfWork')->andReturn($unitOfWork);
 
+        $route = \Mockery::mock('RAPL\RAPL\Mapping\Route');
+        $route->shouldReceive('getEnvelopes')->andReturn(array('results'));
+
         $classMetadata = \Mockery::mock('RAPL\RAPL\Mapping\ClassMetadata');
         $classMetadata->shouldReceive('getName')->andReturn($entityName);
         $classMetadata->shouldReceive('getFormat')->andReturn('json');
-        $classMetadata->shouldReceive('getEnvelopes')->andReturn(array('results'));
+        $classMetadata->shouldReceive('getRoute')->withArgs(array('collection'))->andReturn($route);
 
         $classMetadata->shouldReceive('hasField')->andReturn('true');
 

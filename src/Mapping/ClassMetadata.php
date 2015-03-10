@@ -85,16 +85,9 @@ class ClassMetadata implements ClassMetadataInterface
     private $format;
 
     /**
-     * @var array
+     * @var Route[][]
      */
     private $routes = array();
-
-    /**
-     * The envelope(s) where the result is wrapped into
-     *
-     * @var array
-     */
-    private $envelopes = array();
 
     /**
      * @param string $className
@@ -486,13 +479,11 @@ class ClassMetadata implements ClassMetadataInterface
 
     /**
      * @param string $type
-     * @param array  $element
+     * @param Route  $route
      */
-    public function setRoute($type, array $element)
+    public function setRoute($type, Route $route)
     {
-        if (isset($element['route'])) {
-            $this->routes[$type] = $element['route'];
-        }
+        $this->routes[$type] = $route;
     }
 
     /**
@@ -508,7 +499,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * @param string $type
      *
-     * @return string|null
+     * @return Route|null
      */
     public function getRoute($type)
     {
@@ -517,41 +508,6 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         return null;
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return array
-     */
-    public function getEnvelopes($type)
-    {
-        if ($this->hasEnvelope($type)) {
-            return $this->envelopes[$type];
-        }
-
-        return array();
-    }
-
-    /**
-     * @param string $type
-     * @param array  $element
-     */
-    public function setEnvelopes($type, array $element)
-    {
-        if (isset($element['envelopes'])) {
-            $this->envelopes[$type] = $element['envelopes'];
-        }
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return bool
-     */
-    public function hasEnvelope($type)
-    {
-        return isset($this->envelopes[$type]);
     }
 
     /**

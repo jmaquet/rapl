@@ -26,14 +26,14 @@ class UriBuilder
      */
     public function createUri(array $criteria)
     {
-        if (count($criteria) === 1 && array_key_exists('id', $criteria)) {
-            $uri = $this->classMetadata->getRoute('resource');
+        if ($this->classMetadata->hasRoute('resource') && count($criteria) === 1 && array_key_exists('id', $criteria)) {
+            $uri = $this->classMetadata->getRoute('resource')->getPattern();
 
             foreach ($criteria as $field => $value) {
                 $uri = str_replace(sprintf('{%s}', $field), $value, $uri);
             }
         } else {
-            $uri = $this->classMetadata->getRoute('collection');
+            $uri = $this->classMetadata->getRoute('collection')->getPattern();
         }
 
         return $uri;

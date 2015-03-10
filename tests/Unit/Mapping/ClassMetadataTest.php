@@ -4,6 +4,7 @@ namespace RAPL\Tests\Unit\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use RAPL\RAPL\Mapping\ClassMetadata;
+use RAPL\RAPL\Mapping\Route;
 use RAPL\Tests\Fixtures\Entities\Book;
 
 class ClassMetadataTest extends \PHPUnit_Framework_TestCase
@@ -260,48 +261,18 @@ class ClassMetadataTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNull($metadata->getRoute('resource'));
 
-        $element = array(
-            'resource'   => array(
-                'route'     => 'books/{id}',
-                'envelopes' => array('results', 0),
-            ),
-            'collection' => array(
-                'route'     => 'books',
-                'envelopes' => array('results'),
-            ),
-        );
+        $resourceRoute   = new Route('books/{id}', array('results', 0));
+        $collectionRoute = new Route('books', array('results'));
 
-        $metadata->setRoute('resource', $element['resource']);
-        $metadata->setRoute('collection', $element['collection']);
+        $metadata->setRoute('resource', $resourceRoute);
+        $metadata->setRoute('collection', $collectionRoute);
 
         $this->assertTrue($metadata->hasRoute('resource'));
         $this->assertTrue($metadata->hasRoute('collection'));
 
         $actual = $metadata->getRoute('collection');
 
-        $this->assertSame('books', $actual);
-    }
-
-    public function testSetGetEnvelopes()
-    {
-        $metadata = $this->getClassMetadata();
-
-        $element = array(
-            'resource'   => array(
-                'route'     => 'books/{id}',
-                'envelopes' => array('results', 0),
-            ),
-            'collection' => array(
-                'route'     => 'books',
-                'envelopes' => array('results'),
-            ),
-        );
-
-        $metadata->setEnvelopes('resource', $element['resource']);
-        $metadata->setEnvelopes('collection', $element['collection']);
-
-        $this->assertSame($element['resource']['envelopes'], $metadata->getEnvelopes('resource'));
-        $this->assertSame($element['collection']['envelopes'], $metadata->getEnvelopes('collection'));
+        $this->assertSame($collectionRoute, $actual);
     }
 
     public function testSetFieldValue()

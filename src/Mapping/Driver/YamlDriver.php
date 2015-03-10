@@ -5,6 +5,7 @@ namespace RAPL\RAPL\Mapping\Driver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Common\Persistence\Mapping\Driver\FileLocator;
+use RAPL\RAPL\Mapping\Route;
 use Symfony\Component\Yaml\Yaml;
 
 class YamlDriver extends FileDriver
@@ -23,29 +24,20 @@ class YamlDriver extends FileDriver
     /**
      * Loads the metadata for the specified class into the provided container.
      *
-     * @param string        $className
-     * @param ClassMetadata $metadata
+     * @param string                                         $className
+     * @param ClassMetadata|\RAPL\RAPL\Mapping\ClassMetadata $metadata
      *
      * @return void
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
-        /** @var $metadata \RAPL\RAPL\Mapping\ClassMetadata */
         $element = $this->getElement($className);
 
         if (isset($element['format'])) {
             $metadata->setFormat($element['format']);
         }
 
-        if (isset($element['resource'])) {
-            $metadata->setRoute('resource', $element['resource']);
-            $metadata->setEnvelopes('resource', $element['resource']);
-        }
-
-        if (isset($element['collection'])) {
-            $metadata->setRoute('collection', $element['collection']);
-            $metadata->setEnvelopes('collection', $element['collection']);
-        }
+        $this->setRoutes($metadata, $element);
 
         if (isset($element['identifiers'])) {
             foreach ($element['identifiers'] as $fieldName => $fieldElement) {
@@ -81,6 +73,22 @@ class YamlDriver extends FileDriver
                         'serializedName' => (isset($embedElement['serializedName'])) ? (string) $embedElement['serializedName'] : null
                     )
                 );
+            }
+        }
+    }
+
+    /**
+     * @param ClassMetadata|\RAPL\RAPL\Mapping\ClassMetadata $metadata
+     * @param array                                          $element
+     */
+    protected function setRoutes(ClassMetadata $metadata, array $element)
+    {
+        foreach (array('resource', 'collection') as $type) {
+            if (isset($element[$type]) && isset($element[$type]['route'])) {
+                $pattern   = $element[$type]['route'];
+                $envelopes = (isset($element[$type]['envelopes'])) ? $element[$type]['envelopes'] : array();
+
+                $metadata->setRoute($type, new Route($pattern, $envelopes));
             }
         }
     }

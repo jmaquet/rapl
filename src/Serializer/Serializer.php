@@ -164,7 +164,7 @@ class Serializer
      */
     private function unwrap(array $data, $type = 'collection')
     {
-        $containers = $this->classMetadata->getEnvelopes($type);
+        $containers = $this->classMetadata->getRoute($type)->getEnvelopes();
 
         foreach ($containers as $container) {
             if (isset($data[$container])) {

@@ -2,6 +2,7 @@
 
 namespace RAPL\Tests\Unit;
 
+use RAPL\RAPL\Mapping\Route;
 use RAPL\RAPL\UriBuilder;
 
 class UriBuilderTest extends \PHPUnit_Framework_TestCase
@@ -10,8 +11,12 @@ class UriBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $classMetadata = \Mockery::mock('RAPL\RAPL\Mapping\ClassMetadata');
 
-        $classMetadata->shouldReceive('getRoute')->withArgs(array('resource'))->andReturn('books/{id}.json')->once();
-        $classMetadata->shouldReceive('getRoute')->withArgs(array('collection'))->andReturn('books.json')->once();
+        $resource   = new Route('books/{id}.json');
+        $collection = new Route('books.json');
+
+        $classMetadata->shouldReceive('hasRoute')->withArgs(array('resource'))->andReturn(true)->atLeast(1);
+        $classMetadata->shouldReceive('getRoute')->withArgs(array('resource'))->andReturn($resource)->once();
+        $classMetadata->shouldReceive('getRoute')->withArgs(array('collection'))->andReturn($collection)->once();
 
         $uriBuilder = new UriBuilder($classMetadata);
 
