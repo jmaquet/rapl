@@ -6,8 +6,8 @@ use Guzzle\Http\Exception\ClientErrorResponseException;
 use RAPL\RAPL\Connection\ConnectionInterface;
 use RAPL\RAPL\EntityManagerInterface;
 use RAPL\RAPL\Mapping\ClassMetadata;
+use RAPL\RAPL\Routing\RouterInterface;
 use RAPL\RAPL\Serializer\Serializer;
-use RAPL\RAPL\UriBuilder;
 
 class BasicEntityPersister implements EntityPersister
 {
@@ -32,23 +32,23 @@ class BasicEntityPersister implements EntityPersister
     private $serializer;
 
     /**
-     * @var UriBuilder
+     * @var RouterInterface
      */
-    private $uriBuilder;
+    private $router;
 
     /**
      * @param EntityManagerInterface $manager
      * @param ClassMetadata          $classMetadata
+     * @param RouterInterface        $router
      */
-    public function __construct(EntityManagerInterface $manager, ClassMetadata $classMetadata)
+    public function __construct(EntityManagerInterface $manager, ClassMetadata $classMetadata, RouterInterface $router)
     {
         $this->manager       = $manager;
         $this->connection    = $manager->getConnection();
         $this->classMetadata = $classMetadata;
 
         $this->serializer = new Serializer($manager, $classMetadata);
-
-        $this->uriBuilder = new UriBuilder($classMetadata);
+        $this->router     = $router;
     }
 
     /**
@@ -121,6 +121,6 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getUri(array $criteria)
     {
-        return $this->uriBuilder->createUri($criteria);
+        return $this->router->generate($this->classMetadata, $criteria);
     }
 }

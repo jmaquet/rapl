@@ -7,6 +7,7 @@ use Mockery\MockInterface;
 use RAPL\RAPL\Connection\Connection;
 use RAPL\RAPL\EntityManager;
 use RAPL\RAPL\Mapping\ClassMetadata;
+use RAPL\RAPL\Routing\RouterInterface;
 use RAPL\RAPL\UnitOfWork;
 use RAPL\Tests\Fixtures\Entities\Author;
 
@@ -25,8 +26,9 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->manager = \Mockery::mock('RAPL\RAPL\EntityManager');
+        $router  = \Mockery::mock('RAPL\RAPL\Routing\RouterInterface');
 
-        $this->unitOfWork = new UnitOfWork($this->manager);
+        $this->unitOfWork = new UnitOfWork($this->manager, $router);
     }
 
     public function testGetEntityPersister()
@@ -40,7 +42,9 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $manager->shouldReceive('getClassMetadata')->withArgs(array($className))->andReturn($classMetadata)->once();
         $manager->shouldReceive('getConnection')->andReturn($connection)->once();
 
-        $unitOfWork = new UnitOfWork($manager);
+        $router  = \Mockery::mock('RAPL\RAPL\Routing\RouterInterface');
+
+        $unitOfWork = new UnitOfWork($manager, $router);
 
         $actual = $unitOfWork->getEntityPersister($className);
         $this->assertInstanceOf('RAPL\RAPL\Persister\EntityPersister', $actual);

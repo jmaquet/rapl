@@ -6,6 +6,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use RAPL\RAPL\Mapping\ClassMetadata;
 use RAPL\RAPL\Persister\BasicEntityPersister;
 use RAPL\RAPL\Persister\EntityPersister;
+use RAPL\RAPL\Routing\RouterInterface;
 
 class UnitOfWork
 {
@@ -39,6 +40,11 @@ class UnitOfWork
     private $manager;
 
     /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
      * The entity persister instances used to persist entity instances
      *
      * @var array
@@ -64,11 +70,13 @@ class UnitOfWork
     private $entityIdentifiers = array();
 
     /**
-     * @param ObjectManager $manager
+     * @param ObjectManager   $manager
+     * @param RouterInterface $router
      */
-    public function __construct(ObjectManager $manager)
+    public function __construct(ObjectManager $manager, RouterInterface $router)
     {
         $this->manager = $manager;
+        $this->router  = $router;
     }
 
     /**
@@ -162,7 +170,7 @@ class UnitOfWork
 
         $classMetadata = $this->manager->getClassMetadata($entityName);
 
-        $persister = new BasicEntityPersister($this->manager, $classMetadata);
+        $persister = new BasicEntityPersister($this->manager, $classMetadata, $this->router);
 
         $this->persisters[$entityName] = $persister;
 
