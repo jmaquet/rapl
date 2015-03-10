@@ -178,7 +178,7 @@ class EntityManager implements EntityManagerInterface
      *
      * @param string $className
      *
-     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * @return \RAPL\RAPL\Mapping\ClassMetadata
      */
     public function getClassMetadata($className)
     {
