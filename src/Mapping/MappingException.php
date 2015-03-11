@@ -53,4 +53,15 @@ class MappingException extends \Exception implements RAPLException
     {
         return new self(sprintf('An error occured in %s', $entity), 0, $exception);
     }
+
+    /**
+     * @param $className
+     * @param $routeType
+     *
+     * @return MappingException
+     */
+    public static function routeNotConfigured($className, $routeType)
+    {
+        return new self(sprintf('A %s route is not configured for class %s.', $routeType, $className));
+    }
 }
