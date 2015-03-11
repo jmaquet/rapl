@@ -41,7 +41,9 @@ $paths         = array(__DIR__ . '/config');
 $driver        = new \RAPL\RAPL\Mapping\Driver\YamlDriver($paths, '.rapl.yml');
 $configuration->setMetadataDriver($driver);
 
-$manager = new \RAPL\RAPL\EntityManager($connection, $configuration);
+$router = new \RAPL\RAPL\Routing\Router();
+
+$manager = new \RAPL\RAPL\EntityManager($connection, $configuration, $router);
 ```
 
 ## Usage
