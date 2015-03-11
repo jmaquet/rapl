@@ -5,12 +5,12 @@ namespace RAPL\RAPL\Routing;
 class Router extends AbstractRouter
 {
     /**
-     * @param array $conditions
+     * @param Query $query
      *
      * @return string
      */
-    protected function buildQueryString(array $conditions)
+    protected function buildQueryString(Query $query)
     {
-        return http_build_query($conditions);
+        return http_build_query($query->getConditions());
     }
 }

@@ -5,14 +5,14 @@ namespace RAPL\RAPL\Persister;
 interface EntityPersister
 {
     /**
-     * Loads an entity by a list of field criteria.
+     * Loads an entity by a list of field conditions.
      *
-     * @param array       $criteria The criteria by which to load the entity.
-     * @param object|null $entity   The entity to load the data into. If not specified, a new entity is created.
+     * @param array       $conditions The conditions by which to load the entity.
+     * @param object|null $entity     The entity to load the data into. If not specified, a new entity is created.
      *
      * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
      */
-    public function load(array $criteria, $entity = null);
+    public function load(array $conditions, $entity = null);
 
     /**
      * Loads an entity by identifier.
@@ -25,14 +25,14 @@ interface EntityPersister
     public function loadById(array $identifier, $entity = null);
 
     /**
-     * Loads a list of entities by a list of field criteria.
+     * Loads a list of entities by a list of field conditions.
      *
-     * @param array      $criteria
-     * @param array|null $orderBy
-     * @param int|null   $limit
-     * @param int|null   $offset
+     * @param array    $conditions
+     * @param array    $orderBy
+     * @param int|null $limit
+     * @param int|null $offset
      *
      * @return array
      */
-    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null);
+    public function loadAll(array $conditions = array(), array $orderBy = array(), $limit = null, $offset = null);
 }

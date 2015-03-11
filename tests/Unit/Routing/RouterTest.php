@@ -20,7 +20,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
         $router = new Router();
 
-        $actual = $router->generate($classMetadataMock, array());
+        $actual = $router->generate($classMetadataMock);
         $this->assertSame('books', $actual);
 
         $actual = $router->generate($classMetadataMock, array('id' => 3));

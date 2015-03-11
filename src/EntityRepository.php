@@ -57,16 +57,16 @@ class EntityRepository implements ObjectRepository
      * an UnexpectedValueException if certain values of the sorting or limiting details are
      * not supported.
      *
-     * @param array      $criteria
-     * @param array|null $orderBy
-     * @param int|null   $limit
-     * @param int|null   $offset
+     * @param array    $criteria
+     * @param array    $orderBy
+     * @param int|null $limit
+     * @param int|null $offset
      *
      * @return array The objects.
      *
      * @throws \UnexpectedValueException
      */
-    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+    public function findBy(array $criteria, array $orderBy = array(), $limit = null, $offset = null)
     {
         return $this->persister->loadAll($criteria, $orderBy, $limit, $offset);
     }
