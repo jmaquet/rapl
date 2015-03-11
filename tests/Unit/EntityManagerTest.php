@@ -6,6 +6,7 @@ use RAPL\RAPL\Configuration;
 use RAPL\RAPL\Connection\Connection;
 use RAPL\RAPL\EntityManager;
 use RAPL\RAPL\Mapping\ClassMetadata;
+use RAPL\RAPL\Routing\Router;
 use RAPL\Tests\Mocks\EntityManagerMock;
 
 class EntityManagerTest extends \PHPUnit_Framework_TestCase
@@ -14,7 +15,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
     {
         $connection = new Connection('http://example.com/api');
         $config     = new Configuration();
-        $manager    = new EntityManager($connection, $config);
+        $manager    = new EntityManager($connection, $config, new Router());
 
         $this->assertSame($config, $manager->getConfiguration());
     }
@@ -34,7 +35,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
         $configMock->shouldReceive('getRepositoryFactory')->andReturn($repositoryFactoryMock)->once();
 
         $connection = new Connection('http://example.com/api');
-        $manager    = new EntityManager($connection, $configMock);
+        $manager    = new EntityManager($connection, $configMock, new Router());
         $actual     = $manager->find('SomeClass', $id);
 
         $this->assertSame($object, $actual);
@@ -46,7 +47,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
 
         $configMock = \Mockery::mock('RAPL\RAPL\Configuration');
         $connection = new Connection('http://example.com/api');
-        $manager    = new EntityManagerMock($connection, $configMock);
+        $manager    = new EntityManagerMock($connection, $configMock, new Router());
 
         $unitOfWorkMock = \Mockery::mock('RAPL\RAPL\UnitOfWork');
         $unitOfWorkMock->shouldReceive('persist')->withArgs(array($object))->once();
@@ -62,7 +63,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
 
         $configMock = \Mockery::mock('RAPL\RAPL\Configuration');
         $connection = new Connection('http://example.com/api');
-        $manager    = new EntityManagerMock($connection, $configMock);
+        $manager    = new EntityManagerMock($connection, $configMock, new Router());
 
         $unitOfWorkMock = \Mockery::mock('RAPL\RAPL\UnitOfWork');
         $unitOfWorkMock->shouldReceive('remove')->withArgs(array($object))->once();
@@ -79,7 +80,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
 
         $configMock = \Mockery::mock('RAPL\RAPL\Configuration');
         $connection = new Connection('http://example.com/api');
-        $manager    = new EntityManagerMock($connection, $configMock);
+        $manager    = new EntityManagerMock($connection, $configMock, new Router());
 
         $unitOfWorkMock = \Mockery::mock('RAPL\RAPL\UnitOfWork');
         $unitOfWorkMock->shouldReceive('merge')->withArgs(array($object))->andReturn($managedObject)->once();
@@ -95,7 +96,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
     {
         $configMock = \Mockery::mock('RAPL\RAPL\Configuration');
         $connection = new Connection('http://example.com/api');
-        $manager    = new EntityManagerMock($connection, $configMock);
+        $manager    = new EntityManagerMock($connection, $configMock, new Router());
 
         $unitOfWorkMock = \Mockery::mock('RAPL\RAPL\UnitOfWork');
         $unitOfWorkMock->shouldReceive('clear')->withArgs(array(null))->once();
@@ -109,7 +110,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
     {
         $configMock = \Mockery::mock('RAPL\RAPL\Configuration');
         $connection = new Connection('http://example.com/api');
-        $manager    = new EntityManagerMock($connection, $configMock);
+        $manager    = new EntityManagerMock($connection, $configMock, new Router());
 
         $unitOfWorkMock = \Mockery::mock('RAPL\RAPL\UnitOfWork');
         $unitOfWorkMock->shouldReceive('clear')->withArgs(array('EntityName'))->once();
@@ -125,7 +126,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
 
         $configMock = \Mockery::mock('RAPL\RAPL\Configuration');
         $connection = new Connection('http://example.com/api');
-        $manager    = new EntityManagerMock($connection, $configMock);
+        $manager    = new EntityManagerMock($connection, $configMock, new Router());
 
         $unitOfWorkMock = \Mockery::mock('RAPL\RAPL\UnitOfWork');
         $unitOfWorkMock->shouldReceive('detach')->withArgs(array($object))->once();
@@ -141,7 +142,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
 
         $configMock = \Mockery::mock('RAPL\RAPL\Configuration');
         $connection = new Connection('http://example.com/api');
-        $manager    = new EntityManagerMock($connection, $configMock);
+        $manager    = new EntityManagerMock($connection, $configMock, new Router());
 
         $unitOfWorkMock = \Mockery::mock('RAPL\RAPL\UnitOfWork');
         $unitOfWorkMock->shouldReceive('refresh')->withArgs(array($object))->once();
@@ -155,7 +156,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
     {
         $configMock = \Mockery::mock('RAPL\RAPL\Configuration');
         $connection = new Connection('http://example.com/api');
-        $manager    = new EntityManagerMock($connection, $configMock);
+        $manager    = new EntityManagerMock($connection, $configMock, new Router());
 
         $unitOfWorkMock = \Mockery::mock('RAPL\RAPL\UnitOfWork');
         $unitOfWorkMock->shouldReceive('commit')->once();
@@ -174,7 +175,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
         $configMock = \Mockery::mock('RAPL\RAPL\Configuration');
         $configMock->shouldReceive('getRepositoryFactory')->andReturn($repositoryFactoryMock)->once();
         $connection = new Connection('http://example.com/api');
-        $manager    = new EntityManager($connection, $configMock);
+        $manager    = new EntityManager($connection, $configMock, new Router());
 
         $repositoryMock = \Mockery::mock('RAPL\RAPL\ResourceRepository');
 
@@ -190,7 +191,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
     {
         $configMock = \Mockery::mock('RAPL\RAPL\Configuration');
         $connection = new Connection('http://example.com/api');
-        $manager    = new EntityManager($connection, $configMock);
+        $manager    = new EntityManager($connection, $configMock, new Router());
 
         $this->assertInstanceOf('RAPL\RAPL\Mapping\ClassMetadataFactory', $manager->getMetadataFactory());
     }
@@ -201,7 +202,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
 
         $configMock = \Mockery::mock('RAPL\RAPL\Configuration');
         $connection = new Connection('http://example.com/api');
-        $manager    = new EntityManagerMock($connection, $configMock);
+        $manager    = new EntityManagerMock($connection, $configMock, new Router());
 
         $classMetadata = new ClassMetadata($className);
 
@@ -221,7 +222,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
         $unitOfWork = \Mockery::mock('RAPL\RAPL\UnitOfWork');
         $obj        = new \stdClass();
 
-        $manager = new EntityManagerMock($connection, $config);
+        $manager = new EntityManagerMock($connection, $config, new Router());
         $unitOfWork->shouldReceive('initializeObject')->withArgs(array($obj))->once();
 
         $manager->setUnitOfWork($unitOfWork);
@@ -236,7 +237,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
         $unitOfWork = \Mockery::mock('RAPL\RAPL\UnitOfWork');
         $obj        = new \stdClass();
 
-        $manager = new EntityManagerMock($connection, $config);
+        $manager = new EntityManagerMock($connection, $config, new Router());
         $unitOfWork->shouldReceive('isScheduledForInsert')->withArgs(array($obj))->andReturn(false)->once();
         $unitOfWork->shouldReceive('isInIdentityMap')->withArgs(array($obj))->andReturn(true)->once();
         $unitOfWork->shouldReceive('isScheduledForDelete')->withArgs(array($obj))->andReturn(false)->once();
@@ -251,7 +252,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
         $connection = \Mockery::mock('RAPL\RAPL\Connection\Connection');
         $config     = \Mockery::mock('RAPL\RAPL\Configuration');
 
-        $manager = new EntityManager($connection, $config);
+        $manager = new EntityManager($connection, $config, new Router());
 
         $this->assertSame($connection, $manager->getConnection());
     }
@@ -261,7 +262,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
         $connection = \Mockery::mock('RAPL\RAPL\Connection\Connection');
         $config     = \Mockery::mock('RAPL\RAPL\Configuration');
 
-        $manager = new EntityManager($connection, $config);
+        $manager = new EntityManager($connection, $config, new Router());
 
         $this->assertSame($config, $manager->getConfiguration());
     }
@@ -272,7 +273,7 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
         $config     = \Mockery::mock('RAPL\RAPL\Configuration');
         $unitOfWork = \Mockery::mock('RAPL\RAPL\UnitOfWork');
 
-        $manager = new EntityManagerMock($connection, $config);
+        $manager = new EntityManagerMock($connection, $config, new Router());
         $manager->setUnitOfWork($unitOfWork);
 
         $this->assertSame($unitOfWork, $manager->getUnitOfWork());

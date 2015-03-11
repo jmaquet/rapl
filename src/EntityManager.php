@@ -4,7 +4,7 @@ namespace RAPL\RAPL;
 
 use RAPL\RAPL\Connection\ConnectionInterface;
 use RAPL\RAPL\Mapping\ClassMetadataFactory;
-use RAPL\RAPL\Routing\Router;
+use RAPL\RAPL\Routing\RouterInterface;
 
 class EntityManager implements EntityManagerInterface
 {
@@ -33,8 +33,9 @@ class EntityManager implements EntityManagerInterface
      *
      * @param ConnectionInterface $connection
      * @param Configuration       $configuration
+     * @param RouterInterface     $router
      */
-    public function __construct(ConnectionInterface $connection, Configuration $configuration)
+    public function __construct(ConnectionInterface $connection, Configuration $configuration, RouterInterface $router)
     {
         $this->connection    = $connection;
         $this->configuration = $configuration;
@@ -42,7 +43,6 @@ class EntityManager implements EntityManagerInterface
         $this->metadataFactory = new ClassMetadataFactory();
         $this->metadataFactory->setEntityManager($this);
 
-        $router           = new Router();
         $this->unitOfWork = new UnitOfWork($this, $router);
     }
 

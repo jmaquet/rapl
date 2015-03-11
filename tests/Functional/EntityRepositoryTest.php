@@ -8,6 +8,7 @@ use Guzzle\Http\Message\Response;
 use RAPL\RAPL\Configuration;
 use RAPL\RAPL\EntityManager;
 use RAPL\RAPL\Mapping\Driver\YamlDriver;
+use RAPL\RAPL\Routing\Router;
 use RAPL\Tests\Fixtures\Entities\Book;
 
 class EntityRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -33,7 +34,7 @@ class EntityRepositoryTest extends \PHPUnit_Framework_TestCase
         $driver        = new YamlDriver($paths, '.rapl.yml');
         $configuration->setMetadataDriver($driver);
 
-        $manager    = new EntityManager($connection, $configuration);
+        $manager    = new EntityManager($connection, $configuration, new Router());
         $repository = $manager->getRepository('RAPL\Tests\Fixtures\Entities\Book');
 
         /** @var Book $actual */
@@ -59,7 +60,7 @@ class EntityRepositoryTest extends \PHPUnit_Framework_TestCase
         $driver        = new YamlDriver($paths, '.rapl.yml');
         $configuration->setMetadataDriver($driver);
 
-        $manager    = new EntityManager($connection, $configuration);
+        $manager    = new EntityManager($connection, $configuration, new Router());
         $repository = $manager->getRepository('RAPL\Tests\Fixtures\Entities\Book');
 
         $actual = $repository->find(1);
@@ -83,7 +84,7 @@ class EntityRepositoryTest extends \PHPUnit_Framework_TestCase
         $driver        = new YamlDriver($paths, '.rapl.yml');
         $configuration->setMetadataDriver($driver);
 
-        $manager    = new EntityManager($connection, $configuration);
+        $manager    = new EntityManager($connection, $configuration, new Router());
         $repository = $manager->getRepository('RAPL\Tests\Fixtures\Entities\Book');
 
         $this->setExpectedException('Guzzle\Http\Exception\ClientErrorResponseException');
@@ -124,7 +125,7 @@ class EntityRepositoryTest extends \PHPUnit_Framework_TestCase
         $driver        = new YamlDriver($paths, '.rapl.yml');
         $configuration->setMetadataDriver($driver);
 
-        $manager    = new EntityManager($connection, $configuration);
+        $manager    = new EntityManager($connection, $configuration, new Router());
         $repository = $manager->getRepository('RAPL\Tests\Fixtures\Entities\Book');
 
         $actual = $repository->findAll();
@@ -166,7 +167,7 @@ class EntityRepositoryTest extends \PHPUnit_Framework_TestCase
         $driver        = new YamlDriver($paths, '.rapl.yml');
         $configuration->setMetadataDriver($driver);
 
-        $manager    = new EntityManager($connection, $configuration);
+        $manager    = new EntityManager($connection, $configuration, new Router());
         $repository = $manager->getRepository('RAPL\Tests\Fixtures\Entities\Book');
 
         /** @var Book $actual */
