@@ -55,8 +55,8 @@ class BasicEntityPersister implements EntityPersister
      * Loads an entity by a list of field conditions.
      *
      * @param array       $conditions The conditions by which to load the entity.
-     * @param object|null $entity   The entity to load the data into. If not specified, a new entity is created.
-     * @param string      $type     Entity type, either 'resource' or 'collection'
+     * @param object|null $entity     The entity to load the data into. If not specified, a new entity is created.
+     * @param string      $type       Entity type, either 'resource' or 'collection'
      *
      * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
      */
@@ -115,10 +115,10 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Returns an URI based on a set of criteria
      *
-     * @param array $conditions
-     * @param array $orderBy
-     * @param null  $limit
-     * @param null  $offset
+     * @param array    $conditions
+     * @param array    $orderBy
+     * @param int|null $limit
+     * @param int|null $offset
      *
      * @return string
      */
