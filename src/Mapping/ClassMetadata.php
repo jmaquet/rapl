@@ -335,7 +335,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @param string $assocName
      *
-     * @return boolean|null
+     * @return boolean
      */
     public function isAssociationInverseSide($assocName)
     {
