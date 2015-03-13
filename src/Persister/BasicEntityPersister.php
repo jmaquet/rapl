@@ -47,7 +47,7 @@ class BasicEntityPersister implements EntityPersister
         $this->connection    = $manager->getConnection();
         $this->classMetadata = $classMetadata;
 
-        $this->serializer = new Serializer($manager, $classMetadata);
+        $this->serializer = new Serializer($classMetadata, $manager->getUnitOfWork(), $manager->getMetadataFactory());
         $this->router     = $router;
     }
 
@@ -63,6 +63,7 @@ class BasicEntityPersister implements EntityPersister
     public function load(array $conditions, $entity = null, $type = 'collection')
     {
         $uri     = $this->getUri($conditions);
+        $route   = $this->getRoute($conditions);
         $request = $this->connection->createRequest('GET', $uri);
 
         try {
@@ -75,7 +76,11 @@ class BasicEntityPersister implements EntityPersister
             }
         }
 
-        $entities = $this->serializer->deserialize($response->getBody(true), $type);
+        $entities = $this->serializer->deserialize(
+            $response->getBody(true),
+            $route->returnsCollection(),
+            $route->getEnvelopes()
+        );
 
         return $entities ? $entities[0] : null;
     }
@@ -106,10 +111,15 @@ class BasicEntityPersister implements EntityPersister
     public function loadAll(array $conditions = array(), array $orderBy = array(), $limit = null, $offset = null)
     {
         $uri      = $this->getUri($conditions, $orderBy, $limit, $offset);
+        $route    = $this->getRoute($conditions, $orderBy, $limit, $offset);
         $request  = $this->connection->createRequest('GET', $uri);
         $response = $this->connection->sendRequest($request);
 
-        return $this->serializer->deserialize($response->getBody(true));
+        return $this->serializer->deserialize(
+            $response->getBody(true),
+            $route->returnsCollection(),
+            $route->getEnvelopes()
+        );
     }
 
     /**
@@ -125,5 +135,18 @@ class BasicEntityPersister implements EntityPersister
     private function getUri(array $conditions, array $orderBy = array(), $limit = null, $offset = null)
     {
         return $this->router->generate($this->classMetadata, $conditions, $orderBy, $limit, $offset);
+    }
+
+    /**
+     * @param array    $conditions
+     * @param array    $orderBy
+     * @param int|null $limit
+     * @param int|null $offset
+     *
+     * @return \RAPL\RAPL\Mapping\Route
+     */
+    private function getRoute(array $conditions, array $orderBy = array(), $limit = null, $offset = null)
+    {
+        return $this->router->getRoute($this->classMetadata, $conditions, $orderBy, $limit, $offset);
     }
 }

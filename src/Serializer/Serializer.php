@@ -2,23 +2,29 @@
 
 namespace RAPL\RAPL\Serializer;
 
-use RAPL\RAPL\EntityManagerInterface;
+use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 use RAPL\RAPL\Mapping\ClassMetadata;
+use RAPL\RAPL\UnitOfWork;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Serializer as SymfonySerializer;
 
-class Serializer
+class Serializer implements SerializerInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $manager;
-
     /**
      * @var ClassMetadata
      */
     private $classMetadata;
+
+    /**
+     * @var UnitOfWork
+     */
+    private $unitOfWork;
+
+    /**
+     * @var ClassMetadataFactory
+     */
+    private $classMetadataFactory;
 
     /**
      * @var Serializer
@@ -26,13 +32,15 @@ class Serializer
     private $serializer;
 
     /**
-     * @param EntityManagerInterface $entityManager
-     * @param ClassMetadata          $classMetadata
+     * @param ClassMetadata        $metadata
+     * @param UnitOfWork           $unitOfWork
+     * @param ClassMetadataFactory $metadataFactory
      */
-    public function __construct(EntityManagerInterface $entityManager, ClassMetadata $classMetadata)
+    public function __construct(ClassMetadata $metadata, UnitOfWork $unitOfWork, ClassMetadataFactory $metadataFactory)
     {
-        $this->manager       = $entityManager;
-        $this->classMetadata = $classMetadata;
+        $this->classMetadata        = $metadata;
+        $this->unitOfWork           = $unitOfWork;
+        $this->classMetadataFactory = $metadataFactory;
 
         $normalizers      = array(new GetSetMethodNormalizer());
         $encoders         = array(new JsonEncoder());
@@ -40,30 +48,71 @@ class Serializer
     }
 
     /**
-     * Deserializes the data
+     * Deserializes serialized data
      *
-     * Decodes the serialized data, and then hydrates the entities.
-     *
-     * @param string $data
-     * @param string $type Entity type, either 'resource' or 'collection'
+     * @param string  $data
+     * @param boolean $isCollection
+     * @param array   $envelopes
      *
      * @return array
      */
-    public function deserialize($data, $type = 'collection')
+    public function deserialize($data, $isCollection, array $envelopes = array())
     {
-        $data     = $this->decode($data);
-        $elements = $this->unwrap($data, $type);
-        $elements = ($type == 'collection') ? $elements : array($elements);
+        $data = $this->decode($data);
+        $data = $this->unwrap($data, $envelopes);
 
-        $entities = array();
-
-        foreach ($elements as $elementData) {
-            $elementData = $this->mapFromSerialized($elementData);
-
-            $this->hydrateSingleEntity($elementData, $entities);
+        if (!$isCollection) {
+            $data = array($data);
         }
 
-        return $entities;
+        $hydratedEntities = array();
+
+        foreach ($data as $entityData) {
+            $entityData = $this->mapFromSerialized($entityData);
+
+            $this->hydrateSingleEntity($entityData, $hydratedEntities);
+        }
+
+        return $hydratedEntities;
+    }
+
+    /**
+     * @param string $data
+     *
+     * @return array
+     */
+    private function decode($data)
+    {
+        return $this->serializer->decode($data, $this->classMetadata->getFormat());
+    }
+
+    /**
+     * @param array $data
+     * @param array $result
+     */
+    private function hydrateSingleEntity(array $data, array &$result)
+    {
+        $entity   = $this->unitOfWork->createEntity($this->classMetadata->getName(), $data);
+        $result[] = $entity;
+    }
+
+    /**
+     * Unwraps the data from its envelopes
+     *
+     * @param array $data
+     * @param array $envelopes
+     *
+     * @return array
+     */
+    private function unwrap(array $data, array $envelopes)
+    {
+        foreach ($envelopes as $envelope) {
+            if (isset($data[$envelope])) {
+                $data = $data[$envelope];
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -83,8 +132,12 @@ class Serializer
                 if (isset($fieldMapping['association'])) {
                     $embedded = array();
 
-                    $associationMetadata   = $this->manager->getClassMetadata($fieldMapping['targetEntity']);
-                    $associationSerializer = new Serializer($this->manager, $associationMetadata);
+                    $associationMetadata   = $this->classMetadataFactory->getMetadataFor($fieldMapping['targetEntity']);
+                    $associationSerializer = new Serializer(
+                        $associationMetadata,
+                        $this->unitOfWork,
+                        $this->classMetadataFactory
+                    );
 
                     if ($fieldMapping['association'] === ClassMetadata::EMBED_ONE) {
                         if (is_array($value)) {
@@ -132,46 +185,5 @@ class Serializer
         }
 
         return $mappedEntityData;
-    }
-
-    /**
-     * @param array $data
-     * @param array $result
-     */
-    private function hydrateSingleEntity(array $data, array &$result)
-    {
-        $entity   = $this->manager->getUnitOfWork()->createEntity($this->classMetadata->getName(), $data);
-        $result[] = $entity;
-    }
-
-    /**
-     * @param string $data
-     *
-     * @return array
-     */
-    private function decode($data)
-    {
-        return $this->serializer->decode($data, $this->classMetadata->getFormat());
-    }
-
-    /**
-     * Unwraps the data from containers
-     *
-     * @param array  $data
-     * @param string $type Entity type, either 'resource' or 'collection'
-     *
-     * @return array
-     */
-    private function unwrap(array $data, $type = 'collection')
-    {
-        $containers = $this->classMetadata->getRoute($type)->getEnvelopes();
-
-        foreach ($containers as $container) {
-            if (isset($data[$container])) {
-                $data = $data[$container];
-            }
-        }
-
-        return $data;
     }
 }

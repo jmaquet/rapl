@@ -37,6 +37,8 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
         $connection = new Connection('http://example.com');
 
+        $metadataFactory = \Mockery::mock('RAPL\RAPL\Mapping\ClassMetadataFactory');
+
         $manager = \Mockery::mock('RAPL\RAPL\EntityManager');
         $manager->shouldReceive('getClassMetadata')->withArgs(array($className))->andReturn($classMetadata)->once();
         $manager->shouldReceive('getConnection')->andReturn($connection)->once();
@@ -44,6 +46,9 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $router = \Mockery::mock('RAPL\RAPL\Routing\RouterInterface');
 
         $unitOfWork = new UnitOfWork($manager, $router);
+
+        $manager->shouldReceive('getUnitOfWork')->andReturn($unitOfWork)->once();
+        $manager->shouldReceive('getMetadataFactory')->andReturn($metadataFactory)->once();
 
         $actual = $unitOfWork->getEntityPersister($className);
         $this->assertInstanceOf('RAPL\RAPL\Persister\EntityPersister', $actual);

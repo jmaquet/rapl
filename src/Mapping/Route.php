@@ -10,18 +10,25 @@ class Route
     private $pattern = '';
 
     /**
+     * @var boolean
+     */
+    private $returnsCollection;
+
+    /**
      * @var array
      */
     private $envelopes = array();
 
     /**
      * @param string $pattern   The pattern used to build a URI
+     * @param bool   $returnsCollection
      * @param array  $envelopes Envelopes in which the result data is wrapped
      */
-    public function __construct($pattern, $envelopes = array())
+    public function __construct($pattern, $returnsCollection = true, $envelopes = array())
     {
-        $this->pattern   = $pattern;
-        $this->envelopes = $envelopes;
+        $this->pattern           = $pattern;
+        $this->returnsCollection = $returnsCollection;
+        $this->envelopes         = $envelopes;
     }
 
     /**
@@ -30,6 +37,14 @@ class Route
     public function getPattern()
     {
         return $this->pattern;
+    }
+
+    /**
+     * @return bool
+     */
+    public function returnsCollection()
+    {
+        return $this->returnsCollection;
     }
 
     /**

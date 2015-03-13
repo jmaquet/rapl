@@ -88,7 +88,13 @@ class YamlDriver extends FileDriver
                 $pattern   = $element[$type]['route'];
                 $envelopes = (isset($element[$type]['envelopes'])) ? $element[$type]['envelopes'] : array();
 
-                $metadata->setRoute($type, new Route($pattern, $envelopes));
+                if ($type === 'resource') {
+                    $returnsCollection = false;
+                } else {
+                    $returnsCollection = true;
+                }
+
+                $metadata->setRoute($type, new Route($pattern, $returnsCollection, $envelopes));
             }
         }
     }

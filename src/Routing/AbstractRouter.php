@@ -29,7 +29,7 @@ abstract class AbstractRouter implements RouterInterface
 
         $route = $this->selectRoute($classMetadata, $query);
 
-        $path        = $this->buildPath($route->getPattern(), $query);
+        $path = $this->buildPath($route->getPattern(), $query);
         $queryString = $this->buildQueryString($query);
 
         if (empty($queryString)) {
@@ -41,6 +41,28 @@ abstract class AbstractRouter implements RouterInterface
 
     /**
      * @param ClassMetadata $classMetadata
+     * @param array         $conditions
+     * @param array         $orderBy
+     * @param int|null      $limit
+     * @param int|null      $offset
+     *
+     * @return Route
+     * @throws MappingException
+     */
+    public function getRoute(
+        ClassMetadata $classMetadata,
+        array $conditions = array(),
+        array $orderBy = array(),
+        $limit = null,
+        $offset = null
+    ) {
+        $query = new Query($conditions, $orderBy, $limit, $offset);
+
+        return $this->selectRoute($classMetadata, $query);
+    }
+
+    /**
+     * @param ClassMetadata $classMetadata
      * @param Query         $query
      *
      * @return Route
@@ -48,7 +70,11 @@ abstract class AbstractRouter implements RouterInterface
      */
     protected function selectRoute(ClassMetadata $classMetadata, Query $query)
     {
-        if ($classMetadata->hasRoute('resource') && count($query->getConditions()) === 1 && array_key_exists('id', $query->getConditions())) {
+        if ($classMetadata->hasRoute('resource') && count($query->getConditions()) === 1 && array_key_exists(
+                'id',
+                $query->getConditions()
+            )
+        ) {
             return $classMetadata->getRoute('resource');
         } elseif ($classMetadata->hasRoute('collection')) {
             return $classMetadata->getRoute('collection');
