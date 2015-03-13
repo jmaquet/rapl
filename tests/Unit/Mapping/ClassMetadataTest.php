@@ -141,12 +141,26 @@ class ClassMetadataTest extends \PHPUnit_Framework_TestCase
 
     public function testIsAssociationInverseSide()
     {
-        $this->markTestIncomplete();
+        $metadata = new ClassMetadata('FooBar');
+        $metadata->mapField(array(
+            'fieldName' => 'foo',
+            'association' => ClassMetadata::EMBED_ONE,
+            'isOwningSide' => false
+        ));
+
+        $this->assertTrue($metadata->isAssociationInverseSide('foo'));
     }
 
     public function testGetAssociationMappedByTargetField()
     {
-        $this->markTestIncomplete();
+        $metadata = new ClassMetadata('FooBar');
+        $metadata->mapField(array(
+            'fieldName' => 'foo',
+            'association' => ClassMetadata::EMBED_ONE,
+            'mappedBy' => 'bar'
+        ));
+
+        $this->assertSame('bar', $metadata->getAssociationMappedByTargetField('foo'));
     }
 
     public function testGetIdentifierValues()

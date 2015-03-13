@@ -339,7 +339,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isAssociationInverseSide($assocName)
     {
-        // TODO: Implement isAssociationInverseSide() method.
+        return isset($this->associationMappings[$assocName]) && ! $this->associationMappings[$assocName]['isOwningSide'];
     }
 
     /**
@@ -351,7 +351,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getAssociationMappedByTargetField($assocName)
     {
-        // TODO: Implement getAssociationMappedByTargetField() method.
+        return $this->associationMappings[$assocName]['mappedBy'];
     }
 
     /**
@@ -442,6 +442,8 @@ class ClassMetadata implements ClassMetadataInterface
      */
     private function validateAndCompleteAssociationMapping(array &$mapping)
     {
+        $mapping['isOwningSide'] = true;
+
         if (!isset($mapping['targetEntity'])) {
             throw MappingException::missingTargetEntity($mapping['fieldName']);
         }
