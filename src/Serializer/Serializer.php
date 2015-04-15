@@ -175,6 +175,17 @@ class Serializer implements SerializerInterface
                             }
                             break;
 
+                        // Add by Julien for Smile
+                        case 'array':
+                            if (!is_null($value)) {
+                                $newValue = array();
+                                foreach($value as $key => $content){
+                                    $newValue[$key] = $content;
+                                }
+                                $value = $newValue;
+                            }
+                            break;
+                        // End Add
                         default:
                             $value = null;
                     }
