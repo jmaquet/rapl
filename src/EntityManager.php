@@ -75,7 +75,7 @@ class EntityManager implements EntityManagerInterface
      */
     public function persist($object)
     {
-        $this->unitOfWork->persist($object);
+        return $this->unitOfWork->persist($object);
     }
 
     /**

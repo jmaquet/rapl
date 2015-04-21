@@ -62,7 +62,9 @@ class Serializer implements SerializerInterface
         $data = $this->unwrap($data, $envelopes);
 
         if (!$isCollection) {
-            $data = array($data);
+            $entityData = $this->mapFromSerialized($data);
+            $entityData = $this->hydrateSingleEntity($entityData);
+            return $entityData;
         }
 
         $hydratedEntities = array();
@@ -70,7 +72,7 @@ class Serializer implements SerializerInterface
         foreach ($data as $entityData) {
             $entityData = $this->mapFromSerialized($entityData);
 
-            $this->hydrateSingleEntity($entityData, $hydratedEntities);
+            $hydratedEntities[] = $this->hydrateSingleEntity($entityData);
         }
 
         return $hydratedEntities;
@@ -90,10 +92,11 @@ class Serializer implements SerializerInterface
      * @param array $data
      * @param array $result
      */
-    private function hydrateSingleEntity(array $data, array &$result)
+    private function hydrateSingleEntity(array $data)
     {
         $entity   = $this->unitOfWork->createEntity($this->classMetadata->getName(), $data);
-        $result[] = $entity;
+        
+        return $entity;
     }
 
     /**

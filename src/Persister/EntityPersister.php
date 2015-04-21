@@ -12,7 +12,7 @@ interface EntityPersister
      *
      * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
      */
-    public function load(array $conditions, $entity = null);
+    public function load(array $conditions = array(), $entity = null);
 
     /**
      * Loads an entity by identifier.
@@ -35,4 +35,11 @@ interface EntityPersister
      * @return array
      */
     public function loadAll(array $conditions = array(), array $orderBy = array(), $limit = null, $offset = null);
+
+    //NEW
+    public function save(array $conditions, $entity = null);
+
+    public function remove(array $conditions, $entity = null);
+
+    public function merge(array $conditions, $entity = null);
 }

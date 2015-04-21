@@ -2,12 +2,13 @@
 
 namespace RAPL\RAPL\Persister;
 
-use Guzzle\Http\Exception\ClientErrorResponseException;
 use RAPL\RAPL\Connection\ConnectionInterface;
 use RAPL\RAPL\EntityManagerInterface;
 use RAPL\RAPL\Mapping\ClassMetadata;
 use RAPL\RAPL\Routing\RouterInterface;
 use RAPL\RAPL\Serializer\Serializer;
+use Symfony\Component\HttpFoundation\Response;
+use RAPL\RAPL\Routing\Query;
 
 class BasicEntityPersister implements EntityPersister
 {
@@ -60,7 +61,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
      */
-    public function load(array $conditions, $entity = null, $type = 'collection')
+    public function load(array $conditions = array(), $entity = null, $type = 'collection')
     {
         $uri     = $this->getUri($conditions);
         $route   = $this->getRoute($conditions);
@@ -82,7 +83,7 @@ class BasicEntityPersister implements EntityPersister
             $route->getEnvelopes()
         );
 
-        return $entities ? $entities[0] : null;
+        return $entities ? $entities : null;
     }
 
     /**
@@ -115,8 +116,10 @@ class BasicEntityPersister implements EntityPersister
         $request  = $this->connection->createRequest('GET', $uri);
         $response = $this->connection->sendRequest($request);
 
+        //echo $response->getBody();die;
+
         return $this->serializer->deserialize(
-            $response->getBody(true),
+            $response->getBody(),
             $route->returnsCollection(),
             $route->getEnvelopes()
         );
@@ -138,6 +141,21 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
+     * Returns an URI based on a set of criteria
+     *
+     * @param array    $conditions
+     * @param array    $orderBy
+     * @param int|null $limit
+     * @param int|null $offset
+     *
+     * @return string
+     */
+    private function getSpecificUri($query, array $conditions, array $orderBy = array(), $limit = null, $offset = null)
+    {
+        return $this->router->generateSpecific($this->classMetadata, $query, $conditions, $orderBy, $limit, $offset);
+    }
+
+    /**
      * @param array    $conditions
      * @param array    $orderBy
      * @param int|null $limit
@@ -148,5 +166,121 @@ class BasicEntityPersister implements EntityPersister
     private function getRoute(array $conditions, array $orderBy = array(), $limit = null, $offset = null)
     {
         return $this->router->getRoute($this->classMetadata, $conditions, $orderBy, $limit, $offset);
+    }
+
+    /**
+     * Saves an entity.
+     *
+     * @param array       $conditions
+     * @param object|null $entity     The entity to save. If not specified, nothing is sent.
+     *
+     * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
+     */
+    public function save(array $conditions, $entity = null)
+    {
+        //NEW
+        $query = $query = new Query($conditions);
+
+        $route = $this->router->chooseRoute($this->classMetadata, 'creation');
+        $uri = $this->getSpecificUri('creation', $conditions);
+
+        //$json = json_encode($entity->toArray());
+        //var_dump($json);die;
+
+        $request = $this->connection->createRequest('POST', $uri, ['json' => $entity->toArray()]);
+        //var_dump($request->getHeader('Content-Type'));
+        //echo $request->getBody();die;
+
+        //try {
+            $response = $this->connection->sendRequest($request);
+        /*} catch (ClientEr $e) {
+            if ($e->getResponse()->getStatusCode() == 404) {
+                return null;
+            } else {
+                throw $e;
+            }
+        }*/
+
+            return $this->serializer->deserialize(
+                    $response->getBody(),
+                    $route->returnsCollection(),
+                    $route->getEnvelopes()
+            );
+    }
+
+    public function remove(array $conditions, $entity = null)
+    {
+        //NEW
+        $query = new Query($conditions);
+
+        $route = $this->router->chooseRoute($this->classMetadata, 'remove');
+        $uri = $this->getSpecificUri('resource', ['id' => $entity->getId()]);
+
+        //$json = json_encode($entity->toArray());
+        //var_dump($json);die;
+
+        $request = $this->connection->createRequest('DELETE', $uri, ['json' => $entity->toArray()]);
+        //var_dump($request->getHeader('Content-Type'));
+        //echo $request->getBody();die;
+
+        //try {
+        $response = $this->connection->sendRequest($request);
+
+        //echo $response->getBody();die;
+        /*} catch (ClientEr $e) {
+         if ($e->getResponse()->getStatusCode() == 404) {
+         return null;
+         } else {
+         throw $e;
+         }
+        }*/
+
+        return $response->json();
+
+        /*return $this->serializer->deserialize(
+                $response->getBody(),
+                $route->returnsCollection(),
+                $route->getEnvelopes()
+        );*/
+    }
+
+    public function merge(array $conditions, $entity = null)
+    {
+    	//NEW
+    	$query = new Query($conditions);
+
+    	$route = $this->router->chooseRoute($this->classMetadata, 'update');
+    	$uri = $this->getSpecificUri('resource', ['id' => $entity->getId()]);
+
+    	//$json = json_encode($entity->toArray());
+    	//var_dump($json);die;
+
+    	$request = $this->connection->createRequest('PUT', $uri, ['json' => $entity->toArray()]);
+    	//var_dump($request->getHeader('Content-Type'));
+    	//echo $request->getBody();die;
+
+    	//try {
+    	$response = $this->connection->sendRequest($request);
+
+    	//echo $response->getBody();die;
+    	/*} catch (ClientEr $e) {
+    	if ($e->getResponse()->getStatusCode() == 404) {
+    	return null;
+    	} else {
+    	throw $e;
+    	}
+    	}*/
+
+    	return $this->serializer->deserialize(
+                    $response->getBody(),
+                    $route->returnsCollection(),
+                    $route->getEnvelopes()
+            );
+
+    	/*return $this->serializer->deserialize(
+    	$response->getBody(),
+    	$route->returnsCollection(),
+    	 $route->getEnvelopes()
+    	 );*/
     }
 }

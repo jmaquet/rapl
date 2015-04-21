@@ -2,7 +2,6 @@
 
 namespace RAPL\RAPL;
 
-use Doctrine\Common\Persistence\ObjectManager;
 use RAPL\RAPL\Mapping\ClassMetadata;
 use RAPL\RAPL\Persister\BasicEntityPersister;
 use RAPL\RAPL\Persister\EntityPersister;
@@ -73,7 +72,7 @@ class UnitOfWork
      * @param ObjectManager   $manager
      * @param RouterInterface $router
      */
-    public function __construct(ObjectManager $manager, RouterInterface $router)
+    public function __construct(EntityManagerInterface $manager, RouterInterface $router)
     {
         $this->manager = $manager;
         $this->router  = $router;
@@ -94,7 +93,10 @@ class UnitOfWork
      */
     public function persist($entity)
     {
-        // TODO: Implement persist() method.
+        //NEW
+        $persister = $this->getEntityPersister(get_class($entity));
+        //$this->manager->
+        return $persister->save([], $entity);
     }
 
     /**
@@ -104,7 +106,9 @@ class UnitOfWork
      */
     public function remove($entity)
     {
+        $persister = $this->getEntityPersister(get_class($entity));
         // TODO: Implement remove() method.
+        return $persister->remove([], $entity);
     }
 
     /**
@@ -116,7 +120,9 @@ class UnitOfWork
      */
     public function merge($entity)
     {
-        // TODO: Implement merge() method.
+        $persister = $this->getEntityPersister(get_class($entity));
+        // TODO: Implement remove() method.
+        return $persister->merge([], $entity);
     }
 
     /**

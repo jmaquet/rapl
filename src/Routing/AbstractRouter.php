@@ -41,6 +41,39 @@ abstract class AbstractRouter implements RouterInterface
 
     /**
      * @param ClassMetadata $classMetadata
+     * @param string         $type
+     * @param array         $conditions
+     * @param array         $orderBy
+     * @param int|null      $limit
+     * @param int|null      $offset
+     *
+     * @return string
+     * @throws MappingException
+     */
+    public function generateSpecific(
+            ClassMetadata $classMetadata,
+            $type,
+            array $conditions = array(),
+            array $orderBy = array(),
+            $limit = null,
+            $offset = null
+    ) {
+        $query = new Query($conditions, $orderBy, $limit, $offset);
+
+        $route = $this->chooseRoute($classMetadata, $type);
+
+        $path = $this->buildPath($route->getPattern(), $query);
+        $queryString = $this->buildQueryString($query);
+
+        if (empty($queryString)) {
+            return $path;
+        } else {
+            return $path . '?' . $queryString;
+        }
+    }
+
+    /**
+     * @param ClassMetadata $classMetadata
      * @param array         $conditions
      * @param array         $orderBy
      * @param int|null      $limit
@@ -70,7 +103,8 @@ abstract class AbstractRouter implements RouterInterface
      */
     protected function selectRoute(ClassMetadata $classMetadata, Query $query)
     {
-        if ($classMetadata->hasRoute('resource') && count($query->getConditions()) === 1 && array_key_exists(
+        //NEW
+        if ($classMetadata->hasRoute('resource') && count($query->getConditions()) > 0 && array_key_exists(
                 'id',
                 $query->getConditions()
             )
@@ -78,9 +112,28 @@ abstract class AbstractRouter implements RouterInterface
             return $classMetadata->getRoute('resource');
         } elseif ($classMetadata->hasRoute('collection')) {
             return $classMetadata->getRoute('collection');
+        } elseif ($classMetadata->hasRoute('creation')) {
+            return $classMetadata->getRoute('creation');
         }
 
         throw MappingException::routeNotConfigured($classMetadata->getName(), 'collection');
+    }
+
+    /**
+     * @param ClassMetadata $classMetadata
+     * @param string        $type
+     *
+     * @return Route
+     * @throws MappingException
+     */
+    public function chooseRoute(ClassMetadata $classMetadata, $type)
+    {
+        //NEW
+        if ($classMetadata->hasRoute($type)) {
+            return $classMetadata->getRoute($type);
+        }
+
+        throw MappingException::routeNotConfigured($classMetadata->getName(), $type);
     }
 
     /**

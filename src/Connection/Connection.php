@@ -2,11 +2,13 @@
 
 namespace RAPL\RAPL\Connection;
 
-use Guzzle\Http\Client;
-use Guzzle\Http\ClientInterface;
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Client;
+use GuzzleHttp\Message\RequestInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Event\SubscriberInterface;
+use GuzzleHttp\Event\EmitterInterface;
+use GuzzleHttp\Message\Response;
 
 class Connection implements ConnectionInterface
 {
@@ -20,7 +22,7 @@ class Connection implements ConnectionInterface
      */
     public function __construct($baseUrl)
     {
-        $this->httpClient = new Client($baseUrl);
+        $this->httpClient = new Client(['base_url' => $baseUrl]);
     }
 
     /**
@@ -29,9 +31,10 @@ class Connection implements ConnectionInterface
      *
      * @return RequestInterface
      */
-    public function createRequest($method, $uri)
+    public function createRequest($method = 'GET', $url = null, array $options = array())
     {
-        return $this->httpClient->createRequest($method, $uri);
+        //NEW
+        return $this->httpClient->createRequest($method, $url, $options);
     }
 
     /**
@@ -41,14 +44,14 @@ class Connection implements ConnectionInterface
      */
     public function sendRequest(RequestInterface $request)
     {
-        return $request->send();
+        return $this->httpClient->send($request);
     }
 
     /**
      * @param EventSubscriberInterface $subscriber
      */
-    public function addSubscriber(EventSubscriberInterface $subscriber)
+    public function addSubscriber(SubscriberInterface $subscriber)
     {
-        $this->httpClient->addSubscriber($subscriber);
+        $this->httpClient->getEmitter()->attach($subscriber);
     }
 }

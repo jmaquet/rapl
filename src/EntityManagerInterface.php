@@ -2,10 +2,9 @@
 
 namespace RAPL\RAPL;
 
-use Doctrine\Common\Persistence\ObjectManager;
 use RAPL\RAPL\Connection\ConnectionInterface;
 
-interface EntityManagerInterface extends ObjectManager
+interface EntityManagerInterface
 {
     /**
      * @return ConnectionInterface

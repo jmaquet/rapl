@@ -3,10 +3,9 @@
 namespace RAPL\RAPL;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\Persistence\ObjectRepository;
 use RAPL\RAPL\Persister\EntityPersister;
 
-class EntityRepository implements ObjectRepository
+class EntityRepository
 {
     /**
      * @var EntityPersister
@@ -35,9 +34,10 @@ class EntityRepository implements ObjectRepository
      *
      * @return object The object.
      */
-    public function find($id)
+    public function find($id, array $conditions = array())
     {
-        return $this->persister->loadById(array('id' => $id));
+    	$conditions['id'] = $id;
+        return $this->persister->loadById($conditions);
     }
 
     /**
@@ -45,9 +45,9 @@ class EntityRepository implements ObjectRepository
      *
      * @return array The objects.
      */
-    public function findAll()
+    public function findAll(array $conditions = array())
     {
-        return $this->findBy(array());
+        return $this->findBy($conditions);
     }
 
     /**

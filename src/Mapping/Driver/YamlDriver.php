@@ -83,12 +83,13 @@ class YamlDriver extends FileDriver
      */
     protected function setRoutes(ClassMetadata $metadata, array $element)
     {
-        foreach (array('resource', 'collection') as $type) {
+        //NEW
+        foreach (array('resource', 'collection', 'creation', 'remove', 'update') as $type) {
             if (isset($element[$type]) && isset($element[$type]['route'])) {
                 $pattern   = $element[$type]['route'];
                 $envelopes = (isset($element[$type]['envelopes'])) ? $element[$type]['envelopes'] : array();
 
-                if ($type === 'resource') {
+                if ($type === 'resource' || $type === 'creation' || $type === 'remove'  || $type === 'update') {
                     $returnsCollection = false;
                 } else {
                     $returnsCollection = true;
