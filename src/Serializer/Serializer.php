@@ -200,7 +200,7 @@ class Serializer implements SerializerInterface
                         // Add by Cédric for Smile
                         case 'datetime':
                             if (!is_null($value)) {
-                                $value = new Datetime($value);
+                                $value = new \Datetime($value);
                             }
                             break;
 
