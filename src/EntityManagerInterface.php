@@ -2,6 +2,7 @@
 
 namespace RAPL\RAPL;
 
+use Danone\BoinsiderBundle\RAPL\Plugin\SerializerPlugin;
 use RAPL\RAPL\Connection\ConnectionInterface;
 
 interface EntityManagerInterface
@@ -20,4 +21,9 @@ interface EntityManagerInterface
      * @return UnitOfWork
      */
     public function getUnitOfWork();
+
+    /**
+     * @return SerializerPlugin
+     */
+    public function getSerializerPlugin();
 }

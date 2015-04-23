@@ -48,7 +48,9 @@ class BasicEntityPersister implements EntityPersister
         $this->connection    = $manager->getConnection();
         $this->classMetadata = $classMetadata;
 
-        $this->serializer = new Serializer($classMetadata, $manager->getUnitOfWork(), $manager->getMetadataFactory());
+        $serializerPlugin = $manager->getSerializerPlugin();
+
+        $this->serializer = new Serializer($classMetadata, $manager->getUnitOfWork(), $manager->getMetadataFactory(), $serializerPlugin);
         $this->router     = $router;
     }
 

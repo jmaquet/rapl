@@ -2,6 +2,7 @@
 
 namespace RAPL\RAPL\Serializer;
 
+use Danone\BoinsiderBundle\RAPL\Plugin\SerializerPlugin;
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 use RAPL\RAPL\Mapping\ClassMetadata;
 use RAPL\RAPL\UnitOfWork;
@@ -32,11 +33,16 @@ class Serializer implements SerializerInterface
     private $serializer;
 
     /**
+     * @var SerializerPlugin
+     */
+    private $serializedPlugin;
+
+    /**
      * @param ClassMetadata        $metadata
      * @param UnitOfWork           $unitOfWork
      * @param ClassMetadataFactory $metadataFactory
      */
-    public function __construct(ClassMetadata $metadata, UnitOfWork $unitOfWork, ClassMetadataFactory $metadataFactory)
+    public function __construct(ClassMetadata $metadata, UnitOfWork $unitOfWork, ClassMetadataFactory $metadataFactory, SerializerPlugin $serializerPlugin = null)
     {
         $this->classMetadata        = $metadata;
         $this->unitOfWork           = $unitOfWork;
@@ -45,6 +51,8 @@ class Serializer implements SerializerInterface
         $normalizers      = array(new GetSetMethodNormalizer());
         $encoders         = array(new JsonEncoder());
         $this->serializer = new SymfonySerializer($normalizers, $encoders);
+
+        $this->serializedPlugin = $serializerPlugin;
     }
 
     /**
@@ -95,7 +103,7 @@ class Serializer implements SerializerInterface
     private function hydrateSingleEntity(array $data)
     {
         $entity   = $this->unitOfWork->createEntity($this->classMetadata->getName(), $data);
-        
+
         return $entity;
     }
 
@@ -172,11 +180,11 @@ class Serializer implements SerializerInterface
                             }
                             break;
 
-                        case 'datetime':
+                        /*case 'datetime':
                             if (!is_null($value)) {
                                 $value = new \DateTime($value);
                             }
-                            break;
+                            break;*/
 
                         // Add by Julien for Smile
                         case 'array':
@@ -189,8 +197,16 @@ class Serializer implements SerializerInterface
                             }
                             break;
                         // End Add
+                        // Add by Cédric for Smile
+                        case 'datetime':
+                            if (!is_null($value)) {
+                                $value = new Datetime($value);
+                            }
+                            break;
+
+                        // End Add
                         default:
-                            $value = null;
+                            $value = $this->pluginMap($fieldMapping['type'], $value);
                     }
                 }
 
@@ -199,5 +215,10 @@ class Serializer implements SerializerInterface
         }
 
         return $mappedEntityData;
+    }
+
+    public function pluginMap($type, $value)
+    {
+        return ($this->serializedPlugin != null) ? $this->serializedPlugin->deserialize($type, $value) : null;
     }
 }

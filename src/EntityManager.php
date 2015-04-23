@@ -2,6 +2,7 @@
 
 namespace RAPL\RAPL;
 
+use Danone\BoinsiderBundle\RAPL\Plugin\SerializerPlugin;
 use RAPL\RAPL\Connection\ConnectionInterface;
 use RAPL\RAPL\Mapping\ClassMetadataFactory;
 use RAPL\RAPL\Routing\RouterInterface;
@@ -29,16 +30,23 @@ class EntityManager implements EntityManagerInterface
     protected $unitOfWork;
 
     /**
+     * @var SerializerPlugin
+     */
+    protected $serializerPlugin;
+
+    /**
      * Constructor
      *
      * @param ConnectionInterface $connection
      * @param Configuration       $configuration
      * @param RouterInterface     $router
      */
-    public function __construct(ConnectionInterface $connection, Configuration $configuration, RouterInterface $router)
+    public function __construct(ConnectionInterface $connection, Configuration $configuration, RouterInterface $router, SerializerPlugin $serializerPlugin = null)
     {
         $this->connection    = $connection;
         $this->configuration = $configuration;
+
+        $this->serializerPlugin = $serializerPlugin;
 
         $this->metadataFactory = new ClassMetadataFactory();
         $this->metadataFactory->setEntityManager($this);
@@ -247,5 +255,13 @@ class EntityManager implements EntityManagerInterface
     public function getUnitOfWork()
     {
         return $this->unitOfWork;
+    }
+
+    /**
+     * @return SerializerPlugin
+     */
+    public function getSerializerPlugin()
+    {
+        return $this->serializerPlugin;
     }
 }

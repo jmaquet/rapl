@@ -251,6 +251,25 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @return string
      */
+    public function getSerializedName($serializedName)
+    {
+        $key = array_search($serializedName, $this->fieldNames);
+        if (false !== $key) {
+            return $key;
+        } else {
+            return $serializedName;
+        }
+    }
+
+
+    /**
+     * Gets the field name for a serialized name.
+     * If no field name can be found the serialized name is returned.
+     *
+     * @param string $serializedName
+     *
+     * @return string
+     */
     public function getFieldName($serializedName)
     {
         return isset($this->fieldNames[$serializedName]) ? $this->fieldNames[$serializedName] : $serializedName;
