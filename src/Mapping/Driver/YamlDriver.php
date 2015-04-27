@@ -58,7 +58,8 @@ class YamlDriver extends FileDriver
                     array(
                         'fieldName'      => $fieldName,
                         'type'           => (isset($mapping['type'])) ? $mapping['type'] : null,
-                        'serializedName' => (isset($mapping['serializedName'])) ? (string) $mapping['serializedName'] : null
+                        'serializedName' => (isset($mapping['serializedName'])) ? (string) $mapping['serializedName'] : null,
+                        'subfields' => (isset($mapping['subfields'])) ? $mapping['subfields'] : null
                     )
                 );
             }
