@@ -61,13 +61,19 @@ class Serializer implements SerializerInterface
      * @param string  $data
      * @param boolean $isCollection
      * @param array   $envelopes
+     * @param AbstractEntity  $entity
      *
      * @return array
      */
-    public function deserialize($data, $isCollection, array $envelopes = array())
+    public function deserialize($data, $isCollection, array $envelopes = array(), $entity = null)
     {
         $data = $this->decode($data);
         $data = $this->unwrap($data, $envelopes);
+
+        if(!isset($data['id']) && !$isCollection && $entity !== null){
+            $entity->setId($data['nid']);
+            return $entity;
+        }
 
         if (!$isCollection) {
             $entityData = $this->mapFromSerialized($data);

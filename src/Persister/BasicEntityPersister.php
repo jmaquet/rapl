@@ -189,7 +189,7 @@ class BasicEntityPersister implements EntityPersister
         //$json = json_encode($entity->toArray());
         //var_dump($json);die;
 
-        $request = $this->connection->createRequest('POST', $uri, ['json' => $entity->toArray()]);
+        $request = $this->connection->createRequest('POST', $uri, ['json' => $entity->toArray($this->classMetadata)]);
         //var_dump($request->getHeader('Content-Type'));
         //echo $request->getBody();die;
 
@@ -206,7 +206,8 @@ class BasicEntityPersister implements EntityPersister
             return $this->serializer->deserialize(
                     $response->getBody(),
                     $route->returnsCollection(),
-                    $route->getEnvelopes()
+                    $route->getEnvelopes(),
+                    $entity
             );
     }
 
@@ -221,7 +222,7 @@ class BasicEntityPersister implements EntityPersister
         //$json = json_encode($entity->toArray());
         //var_dump($json);die;
 
-        $request = $this->connection->createRequest('DELETE', $uri, ['json' => $entity->toArray()]);
+        $request = $this->connection->createRequest('DELETE', $uri, ['json' => $entity->toArray($this->classMetadata)]);
         //var_dump($request->getHeader('Content-Type'));
         //echo $request->getBody();die;
 
@@ -257,7 +258,7 @@ class BasicEntityPersister implements EntityPersister
     	//$json = json_encode($entity->toArray());
     	//var_dump($json);die;
 
-    	$request = $this->connection->createRequest('PUT', $uri, ['json' => $entity->toArray()]);
+    	$request = $this->connection->createRequest('PUT', $uri, ['json' => $entity->toArray($this->classMetadata)]);
     	//var_dump($request->getHeader('Content-Type'));
     	//echo $request->getBody();die;
 
@@ -276,7 +277,8 @@ class BasicEntityPersister implements EntityPersister
     	return $this->serializer->deserialize(
                     $response->getBody(),
                     $route->returnsCollection(),
-                    $route->getEnvelopes()
+                    $route->getEnvelopes(),
+                    $entity
             );
 
     	/*return $this->serializer->deserialize(

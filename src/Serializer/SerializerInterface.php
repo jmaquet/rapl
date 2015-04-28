@@ -10,8 +10,9 @@ interface SerializerInterface
      * @param string  $data
      * @param boolean $isCollection
      * @param array   $envelopes
+     * @param AbstractEntity  $entity
      *
      * @return mixed
      */
-    public function deserialize($data, $isCollection, array $envelopes);
+    public function deserialize($data, $isCollection, array $envelopes, $entity = null);
 }
