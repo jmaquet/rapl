@@ -85,7 +85,7 @@ class Serializer implements SerializerInterface
 
         foreach ($data as $entityData) {
         	/** Treatment of tag id */
-        	if(isset($entityDate['tid'])) {
+        	if(isset($entityData['tid'])) {
                 $entityData['id'] = $entityData['tid'];
             }
             /** end of tag id treatment */
