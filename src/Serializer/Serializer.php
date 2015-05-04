@@ -84,6 +84,12 @@ class Serializer implements SerializerInterface
         $hydratedEntities = array();
 
         foreach ($data as $entityData) {
+        	/** Treatment of tag id */
+        	if(isset($entityDate['tid'])) {
+                $entityData['id'] = $entityData['tid'];
+            }
+            /** end of tag id treatment */
+            
             $entityData = $this->mapFromSerialized($entityData);
 
             $hydratedEntities[] = $this->hydrateSingleEntity($entityData);
