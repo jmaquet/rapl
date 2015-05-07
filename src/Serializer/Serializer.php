@@ -87,12 +87,16 @@ class Serializer implements SerializerInterface
         	/** Treatment of tag id */
         	if(isset($entityData['tid'])) {
                 $entityData['id'] = $entityData['tid'];
+            }/** end of tag id treatment, begin of threads treatment */
+            elseif(isset($entityData['thread'])){
+                $entityData['id'] = $entityData['thread'];
             }
-            /** end of tag id treatment */
-            
-            $entityData = $this->mapFromSerialized($entityData);
+            /**end of threads treatment */
 
-            $hydratedEntities[] = $this->hydrateSingleEntity($entityData);
+            if(isset($entityData['id']) && $entityData['id'] !== null){
+                $entityData = $this->mapFromSerialized($entityData);
+                $hydratedEntities[] = $this->hydrateSingleEntity($entityData);
+            }
         }
 
         return $hydratedEntities;
