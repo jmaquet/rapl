@@ -81,9 +81,13 @@ class EntityManager implements EntityManagerInterface
      *
      * @return void
      */
-    public function persist($object)
+    public function persist($object, array $conditions = array())
     {
-        return $this->unitOfWork->persist($object);
+        if ($object->getId() == null) {
+            return $this->unitOfWork->persist($object, $conditions);
+        } else {
+            return $this->unitOfWork->merge($object, $conditions);
+        }
     }
 
     /**
@@ -109,9 +113,9 @@ class EntityManager implements EntityManagerInterface
      *
      * @return object The managed copy of the entity.
      */
-    public function merge($object)
+    public function merge($object, array $conditions = array())
     {
-        return $this->unitOfWork->merge($object);
+        return $this->unitOfWork->merge($object, $conditions);
     }
 
     /**

@@ -91,12 +91,12 @@ class UnitOfWork
      *
      * @param object $entity The entity to persist.
      */
-    public function persist($entity)
+    public function persist($entity, array $conditions = array())
     {
         //NEW
         $persister = $this->getEntityPersister(get_class($entity));
         //$this->manager->
-        return $persister->save([], $entity);
+        return $persister->save($conditions, $entity);
     }
 
     /**
@@ -118,11 +118,11 @@ class UnitOfWork
      *
      * @return object The managed copy of the entity.
      */
-    public function merge($entity)
+    public function merge($entity, array $conditions = array())
     {
         $persister = $this->getEntityPersister(get_class($entity));
         // TODO: Implement remove() method.
-        return $persister->merge([], $entity);
+        return $persister->merge($conditions, $entity);
     }
 
     /**

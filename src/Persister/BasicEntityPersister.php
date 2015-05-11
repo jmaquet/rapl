@@ -193,6 +193,8 @@ class BasicEntityPersister implements EntityPersister
         //var_dump($request->getHeader('Content-Type'));
         //echo $request->getBody();die;
 
+        //var_dump($entity->toArray($this->classMetadata));die;
+
         //try {
             $response = $this->connection->sendRequest($request);
         /*} catch (ClientEr $e) {
@@ -226,6 +228,8 @@ class BasicEntityPersister implements EntityPersister
         //var_dump($request->getHeader('Content-Type'));
         //echo $request->getBody();die;
 
+        //var_dump($entity->toArray($this->classMetadata));die;
+
         //try {
         $response = $this->connection->sendRequest($request);
 
@@ -252,8 +256,10 @@ class BasicEntityPersister implements EntityPersister
     	//NEW
     	$query = new Query($conditions);
 
+        $conditions['id'] = $entity->getId();
+
     	$route = $this->router->chooseRoute($this->classMetadata, 'update');
-    	$uri = $this->getSpecificUri('resource', ['id' => $entity->getId()]);
+    	$uri = $this->getSpecificUri('resource', $conditions);
 
     	//$json = json_encode($entity->toArray());
     	//var_dump($json);die;
@@ -261,6 +267,8 @@ class BasicEntityPersister implements EntityPersister
     	$request = $this->connection->createRequest('PUT', $uri, ['json' => $entity->toArray($this->classMetadata)]);
     	//var_dump($request->getHeader('Content-Type'));
     	//echo $request->getBody();die;
+
+        //var_dump($entity->toArray($this->classMetadata));die;
 
     	//try {
     	$response = $this->connection->sendRequest($request);
