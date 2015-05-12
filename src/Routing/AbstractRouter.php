@@ -18,13 +18,8 @@ abstract class AbstractRouter implements RouterInterface
      * @return string
      * @throws MappingException
      */
-    public function generate(
-        ClassMetadata $classMetadata,
-        array $conditions = array(),
-        array $orderBy = array(),
-        $limit = null,
-        $offset = null
-    ) {
+    public function generate(ClassMetadata $classMetadata, array $conditions = array(), array $orderBy = array(), $limit = null, $offset = null)
+    {
         $query = new Query($conditions, $orderBy, $limit, $offset);
 
         $route = $this->selectRoute($classMetadata, $query);
@@ -103,11 +98,16 @@ abstract class AbstractRouter implements RouterInterface
      */
     protected function selectRoute(ClassMetadata $classMetadata, Query $query)
     {
+        //ALTERNATIVE ROUTE
+        if (array_key_exists('route', $query->getConditions())) {
+            //var_du
+            $ok = 'jiu';
+        }
+
         //NEW
-        if ($classMetadata->hasRoute('resource') && count($query->getConditions()) > 0 && array_key_exists(
-                'id',
-                $query->getConditions()
-            )
+        if ($classMetadata->hasRoute('resource') &&
+            count($query->getConditions()) > 0 &&
+            array_key_exists('id', $query->getConditions())
         ) {
             return $classMetadata->getRoute('resource');
         } elseif ($classMetadata->hasRoute('collection')) {

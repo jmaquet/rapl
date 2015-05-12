@@ -99,6 +99,12 @@ class YamlDriver extends FileDriver
                 $metadata->setRoute($type, new Route($pattern, $returnsCollection, $envelopes));
             }
         }
+
+        if (isset($element['findByRoutes'])) {
+            foreach ($element['findByRoutes'] as $routeName => $route) {
+                $metadata->setRoute('findByRoutes_'.$routeName, new Route($route, true, []));
+            }
+        }
     }
 
     /**

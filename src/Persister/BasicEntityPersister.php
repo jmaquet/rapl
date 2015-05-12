@@ -113,8 +113,17 @@ class BasicEntityPersister implements EntityPersister
      */
     public function loadAll(array $conditions = array(), array $orderBy = array(), $limit = null, $offset = null)
     {
-        $uri      = $this->getUri($conditions, $orderBy, $limit, $offset);
-        $route    = $this->getRoute($conditions, $orderBy, $limit, $offset);
+        if (isset($conditions['route'])) {
+            $routeName = 'findByRoutes_'.$conditions['route'];
+            unset($conditions['route']);
+
+            $route = $this->router->chooseRoute($this->classMetadata, $routeName);
+            $uri = $this->getSpecificUri($routeName, $conditions);
+        } else {
+            $uri      = $this->getUri($conditions, $orderBy, $limit, $offset);
+            $route    = $this->getRoute($conditions, $orderBy, $limit, $offset);
+        }
+
         $request  = $this->connection->createRequest('GET', $uri);
         $response = $this->connection->sendRequest($request);
 
