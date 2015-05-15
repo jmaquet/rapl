@@ -426,6 +426,21 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @throws MappingException
      */
+    public function mapEmbedMany(array $mapping)
+    {
+        $this->validateAndCompleteAssociationMapping($mapping);
+
+        $mapping['embedded'] = true;
+        $mapping['type']     = 'many';
+
+        $this->mapField($mapping);
+    }
+
+    /**
+     * @param array $mapping
+     *
+     * @throws MappingException
+     */
     private function validateAndCompleteFieldMapping(array &$mapping)
     {
         if (!isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
@@ -451,6 +466,10 @@ class ClassMetadata implements ClassMetadataInterface
 
         if (isset($mapping['embedded']) && $mapping['type'] === 'one') {
             $mapping['association'] = self::EMBED_ONE;
+        }
+
+        if (isset($mapping['embedded']) && $mapping['type'] === 'many') {
+            $mapping['association'] = self::EMBED_MANY;
         }
     }
 

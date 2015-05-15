@@ -70,7 +70,10 @@ class Serializer implements SerializerInterface
         $data = $this->decode($data);
         $data = $this->unwrap($data, $envelopes);
 
-        if(!isset($data['id']) && !$isCollection && $entity !== null){
+        if (isset($data[0]) && $data[0] === true) {
+            return $entity;
+        }
+        elseif(!isset($data['id']) && !$isCollection && $entity !== null){
             $entity->setId($data['nid']);
             return $entity;
         }
@@ -93,7 +96,8 @@ class Serializer implements SerializerInterface
             }
             /**end of threads treatment */
 
-            if(isset($entityData['id']) && $entityData['id'] !== null){
+            //var_dump($data[0]['medias']);die;
+            if(isset($entityData['id']) && $entityData['id'] !== null) {
                 $entityData = $this->mapFromSerialized($entityData);
                 $hydratedEntities[] = $this->hydrateSingleEntity($entityData);
             }
@@ -169,9 +173,20 @@ class Serializer implements SerializerInterface
                     if ($fieldMapping['association'] === ClassMetadata::EMBED_ONE) {
                         if (is_array($value)) {
                             $associationData = $associationSerializer->mapFromSerialized($value);
-                            $associationSerializer->hydrateSingleEntity($associationData, $embedded);
+                            $value = $associationSerializer->hydrateSingleEntity($associationData);
+                        } else {
+                            $value = null;
+                        }
+                    }
 
-                            $value = reset($embedded);
+                    if ($fieldMapping['association'] === ClassMetadata::EMBED_MANY) {
+                        if (is_array($value)) {
+                            $subValues = [];
+                            foreach ($value as $subValue) {
+                                $associationData = $associationSerializer->mapFromSerialized($subValue);
+                                $subValues[] = $associationSerializer->hydrateSingleEntity($associationData);
+                            }
+                            $value = $subValues;
                         } else {
                             $value = null;
                         }

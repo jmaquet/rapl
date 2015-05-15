@@ -264,6 +264,8 @@ class UnitOfWork
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->manager->getClassMetadata($className);
 
+        //var_dump('-', $className, $data, '-');
+
         $idHash = $data['id'];
         $id     = array('id' => $data['id']);
 

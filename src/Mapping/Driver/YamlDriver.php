@@ -76,6 +76,18 @@ class YamlDriver extends FileDriver
                 );
             }
         }
+
+        if (isset($element['embedMany'])) {
+            foreach ($element['embedMany'] as $fieldName => $embedElement) {
+                $metadata->mapEmbedMany(
+                    array(
+                        'targetEntity'   => (string) $embedElement['targetEntity'],
+                        'fieldName'      => $fieldName,
+                        'serializedName' => (isset($embedElement['serializedName'])) ? (string) $embedElement['serializedName'] : null
+                    )
+                );
+            }
+        }
     }
 
     /**
