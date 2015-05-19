@@ -200,8 +200,6 @@ class BasicEntityPersister implements EntityPersister
         //$json = json_encode($entity->toArray());
         //var_dump($json);die;
 
-        //echo json_encode($entity->toArray($this->classMetadata));die;
-
         $request = $this->connection->createRequest('POST', $uri, ['json' => $entity->toArray($this->classMetadata)]);
         //var_dump($request->getHeader('Content-Type'));
         //echo $request->getBody();die;
@@ -218,8 +216,6 @@ class BasicEntityPersister implements EntityPersister
             }
         }*/
 
-        //echo $response->getBody();die;
-
             return $this->serializer->deserialize(
                     $response->getBody(),
                     $route->returnsCollection(),
@@ -234,7 +230,7 @@ class BasicEntityPersister implements EntityPersister
         $query = new Query($conditions);
 
         $route = $this->router->chooseRoute($this->classMetadata, 'remove');
-        $uri = $this->getSpecificUri('resource', ['id' => $entity->getId()]);
+        $uri = $this->getSpecificUri('remove', ['id' => $entity->getId()]);
 
         //$json = json_encode($entity->toArray());
         //var_dump($json);die;
@@ -274,9 +270,7 @@ class BasicEntityPersister implements EntityPersister
         $conditions['id'] = $entity->getId();
 
     	$route = $this->router->chooseRoute($this->classMetadata, 'update');
-    	$uri = $this->getSpecificUri('resource', $conditions);
-
-        //echo json_encode($entity->toArray($this->classMetadata));die;
+    	$uri = $this->getSpecificUri('update', $conditions);
 
     	//$json = json_encode($entity->toArray());
     	//var_dump($json);die;

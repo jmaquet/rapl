@@ -131,7 +131,17 @@ abstract class AbstractRouter implements RouterInterface
         //NEW
         if ($classMetadata->hasRoute($type)) {
             return $classMetadata->getRoute($type);
+        } else {
+
         }
+
+        //throw MappingException::routeNotConfigured($classMetadata->getName(), $type);
+    }
+
+    public function getAlternativeRoute(ClassMetadata $classMetadata, $type) {
+        /*if ($type == 'update') {
+            return $classMetadata->getRoute('resource');
+        }*/
 
         throw MappingException::routeNotConfigured($classMetadata->getName(), $type);
     }
