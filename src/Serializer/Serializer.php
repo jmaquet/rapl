@@ -71,7 +71,9 @@ class Serializer implements SerializerInterface
         $data = $this->unwrap($data, $envelopes);
 
         if(!isset($data['id']) && !$isCollection && $entity !== null){
-            //$entity->setId($data['nid']);
+            if (isset($data['nid'])) {
+                $entity->setId($data['nid']);
+            }
             return $entity;
         }
 
