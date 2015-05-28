@@ -1,5 +1,5 @@
 {
-	"name" : "rapl/rapl",
+	"name" : "smile/rapl",
 	"license" : "MIT",
 	"authors" : [{
 			"name" : "Nic Wortel"
