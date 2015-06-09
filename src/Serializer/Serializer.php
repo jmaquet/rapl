@@ -95,10 +95,13 @@ class Serializer implements SerializerInterface
             }
             /**end of threads treatment */
 
-            if(isset($entityData['id']) && $entityData['id'] !== null){
-                $entityData = $this->mapFromSerialized($entityData);
-                $hydratedEntities[] = $this->hydrateSingleEntity($entityData);
+            /** I changed this functionnality because we need to go on, id is not mandatory anymore and defined as -345 */
+            if(!isset($entityData['id']) ||  $entityData['id'] === null){
+                $entityData['id'] = -345;
             }
+            $entityData = $this->mapFromSerialized($entityData);
+            $hydratedEntities[] = $this->hydrateSingleEntity($entityData);
+            /** end */
         }
 
         return $hydratedEntities;
