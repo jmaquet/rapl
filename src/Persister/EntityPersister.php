@@ -42,4 +42,6 @@ interface EntityPersister
     public function remove(array $conditions, $entity = null);
 
     public function merge(array $conditions, $entity = null);
+
+    public function performAlternative(array $conditions, $entity = null);
 }

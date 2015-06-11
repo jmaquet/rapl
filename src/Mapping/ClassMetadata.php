@@ -90,6 +90,11 @@ class ClassMetadata implements ClassMetadataInterface
     private $routes = array();
 
     /**
+     * @var Route[][]
+     */
+    private $alternativeRoutes = array();
+
+    /**
      * @param string $className
      */
     public function __construct($className)
@@ -515,6 +520,39 @@ class ClassMetadata implements ClassMetadataInterface
     public function setFormat($format)
     {
         $this->format = $format;
+    }
+
+    /**
+     * @param string $type
+     * @param Route  $route
+     */
+    public function setAlternativeRoute($type, Route $route)
+    {
+        $this->alternativeRoutes[$type] = $route;
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return bool
+     */
+    public function hasAlternativeRoute($type)
+    {
+        return isset($this->alternativeRoutes[$type]);
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return Route|null
+     */
+    public function getAlternativeRoute($type)
+    {
+        if ($this->hasAlternativeRoute($type)) {
+            return $this->alternativeRoutes[$type];
+        }
+
+        return null;
     }
 
     /**

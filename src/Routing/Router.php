@@ -9,7 +9,7 @@ class Router extends AbstractRouter
      *
      * @return string
      */
-    protected function buildQueryString(Query $query)
+    public static function buildQueryString(Query $query)
     {
         return http_build_query($query->getConditions());
     }

@@ -5,6 +5,8 @@ namespace RAPL\RAPL\Persister;
 use RAPL\RAPL\Connection\ConnectionInterface;
 use RAPL\RAPL\EntityManagerInterface;
 use RAPL\RAPL\Mapping\ClassMetadata;
+use RAPL\RAPL\Mapping\Route;
+use RAPL\RAPL\Routing\AbstractRouter;
 use RAPL\RAPL\Routing\RouterInterface;
 use RAPL\RAPL\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Response;
@@ -79,7 +81,7 @@ class BasicEntityPersister implements EntityPersister
             }
         }
 
-        //echo $response->getBody();die;
+        //echo $response->getBody();
 
         $entities = $this->serializer->deserialize(
             $response->getBody(true),
@@ -299,11 +301,32 @@ class BasicEntityPersister implements EntityPersister
                     $route->getEnvelopes(),
                     $entity
             );
+    }
 
-    	/*return $this->serializer->deserialize(
-    	$response->getBody(),
-    	$route->returnsCollection(),
-    	 $route->getEnvelopes()
-    	 );*/
+    public function performAlternative(array $conditions, $entity = null)
+    {
+        $routeName = $conditions['route'];
+        unset($conditions['route']);
+
+        $query = $query = new Query($conditions);
+
+        if ($this->classMetadata->hasAlternativeRoute($routeName)) {
+            /* @var $route Route */
+            $route = $this->classMetadata->getAlternativeRoute($routeName);
+        }
+
+        $path = AbstractRouter::buildPath($route->getPattern(), $query);
+        $queryString = AbstractRouter::buildQueryString($query);
+        if (empty($queryString)) {
+            $uri = $path;
+        } else {
+            $uri = $path . '?' . $queryString;
+        }
+
+        $request = $this->connection->createRequest($route->getEnvelopes()['method'], $uri/*, ['json' => $entity->toArray($this->classMetadata)]*/);
+
+        $response = $this->connection->sendRequest($request);
+
+        return $response;
     }
 }

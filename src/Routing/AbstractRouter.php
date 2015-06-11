@@ -152,7 +152,7 @@ abstract class AbstractRouter implements RouterInterface
      *
      * @return string
      */
-    protected function buildPath($pattern, Query $query)
+    public static function buildPath($pattern, Query $query)
     {
         $path = $pattern;
 
@@ -173,5 +173,8 @@ abstract class AbstractRouter implements RouterInterface
      *
      * @return string
      */
-    abstract protected function buildQueryString(Query $query);
+    public static function buildQueryString(Query $query)
+    {
+        return http_build_query($query->getConditions());
+    }
 }

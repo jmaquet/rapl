@@ -125,6 +125,13 @@ class UnitOfWork
         return $persister->merge($conditions, $entity);
     }
 
+    public function sendAlternativeRequest($entity, array $conditions = array())
+    {
+        $persister = $this->getEntityPersister(get_class($entity));
+        // TODO: Implement remove() method.
+        return $persister->performAlternative($conditions, $entity);
+    }
+
     /**
      * Clears the UnitOfWork.
      *

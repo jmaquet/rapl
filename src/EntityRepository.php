@@ -85,6 +85,11 @@ class EntityRepository
         return isset($results[0]) ? $results[0] : null;
     }
 
+    public function sendAlternativeRequest($object, array $conditions = array())
+    {
+        return $this->persister->performAlternative($conditions);
+    }
+
     /**
      * Returns the class name of the object managed by the repository.
      *
