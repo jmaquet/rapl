@@ -78,6 +78,10 @@ class Serializer implements SerializerInterface
         }
 
         if (!$isCollection) {
+            /** I changed this functionnality because we need to go on, id is not mandatory anymore and defined as -345 */
+            if(!isset($data['id']) ||  $data['id'] === null){
+                $data['id'] = -345;
+            }
             $entityData = $this->mapFromSerialized($data);
             $entityData = $this->hydrateSingleEntity($entityData);
             return $entityData;
