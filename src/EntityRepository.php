@@ -85,7 +85,7 @@ class EntityRepository
         return isset($results[0]) ? $results[0] : null;
     }
 
-    public function sendAlternativeRequest($object, array $conditions = array())
+    public function sendAlternativeRequest(array $conditions = array())
     {
         return $this->persister->performAlternative($conditions);
     }
