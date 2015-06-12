@@ -119,6 +119,21 @@ class EntityManager implements EntityManagerInterface
     }
 
     /**
+     * Save the state of a detached object into the persistence context
+     * of this ObjectManager and returns the managed copy of the object.
+     * The object passed to save will not become associated/managed with this ObjectManager.
+     *
+     * @param object $object
+     * @param array $conditions
+     *
+     * @return object The managed copy of the entity.
+     */
+    public function save($object, array $conditions = array())
+    {
+        return $this->unitOfWork->persist($object, $conditions);
+    }
+
+    /**
      * Clears the ObjectManager. All objects that are currently managed
      * by this ObjectManager become detached.
      *

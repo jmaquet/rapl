@@ -81,6 +81,10 @@ class BasicEntityPersister implements EntityPersister
             }
         }
 
+        if($response->getStatusCode() === 204){
+            return array();
+        }
+
         //echo $response->getBody();
 
         $entities = $this->serializer->deserialize(
@@ -131,6 +135,9 @@ class BasicEntityPersister implements EntityPersister
         $request  = $this->connection->createRequest('GET', $uri);
         $response = $this->connection->sendRequest($request);
 
+        if($response->getStatusCode() === 204){
+            return array();
+        }
         //echo $response->getBody();die;
 
         return $this->serializer->deserialize(
