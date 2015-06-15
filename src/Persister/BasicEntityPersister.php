@@ -315,6 +315,11 @@ class BasicEntityPersister implements EntityPersister
         $routeName = $conditions['route'];
         unset($conditions['route']);
 
+        if (isset($conditions['json'])) {
+            $json = $conditions['json'];
+            unset($conditions['json']);
+        }
+
         $query = $query = new Query($conditions);
 
         if ($this->classMetadata->hasAlternativeRoute($routeName)) {
@@ -330,7 +335,11 @@ class BasicEntityPersister implements EntityPersister
             $uri = $path . '?' . $queryString;
         }
 
-        $request = $this->connection->createRequest($route->getEnvelopes()['method'], $uri/*, ['json' => $entity->toArray($this->classMetadata)]*/);
+        if (isset($json)) {
+            $request = $this->connection->createRequest($route->getEnvelopes()['method'], $uri, ['json' => $json]);
+        } else {
+            $request = $this->connection->createRequest($route->getEnvelopes()['method'], $uri);
+        }
 
         $response = $this->connection->sendRequest($request);
 
