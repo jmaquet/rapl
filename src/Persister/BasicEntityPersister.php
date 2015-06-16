@@ -343,6 +343,18 @@ class BasicEntityPersister implements EntityPersister
 
         $response = $this->connection->sendRequest($request);
 
-        return $response;
+        if(isset($conditions['returnObject'])){
+            if($response->getStatusCode() === 204){
+                return array();
+            }
+            return $this->serializer->deserialize(
+                $response->getBody(),
+                $route->returnsCollection(),
+                $route->getEnvelopes()
+            );
+        }
+        else{
+            return $response;
+        }
     }
 }
