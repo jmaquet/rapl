@@ -10,6 +10,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Event\SubscriberInterface;
 use GuzzleHttp\Event\EmitterInterface;
 use GuzzleHttp\Message\Response;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class Connection implements ConnectionInterface
 {
@@ -24,12 +25,18 @@ class Connection implements ConnectionInterface
     protected $logger;
 
     /**
+     * @var Stopwatch
+     */
+    protected $stopwatch;
+
+    /**
      * @param string $baseUrl
      */
-    public function __construct($baseUrl, $logger = null)
+    public function __construct($baseUrl, Logger $logger = null, Stopwatch $stopwatch = null)
     {
         $this->httpClient = new Client(['base_url' => $baseUrl]);
         $this->logger = $logger;
+        $this->stopwatch = $stopwatch;
     }
 
     /**
@@ -54,6 +61,9 @@ class Connection implements ConnectionInterface
         if ($this->logger !== null) {
             $timestart = microtime(true);
         }
+        if ($this->stopwatch) {
+            $this->stopwatch->start('rapl.rest');
+        }
 
         $response = $this->httpClient->send($request);
 
@@ -63,6 +73,9 @@ class Connection implements ConnectionInterface
             $page_load_time = number_format($time, 3);
 
             $this->logger->addInfo('[RAPL] Webservice called : ' . $request->getMethod() . ' ' .$request->getPath() . ' [' . $page_load_time . 's]');
+        }
+        if ($this->stopwatch) {
+            $this->stopwatch->stop('rapl.rest');
         }
 
         return $response;
