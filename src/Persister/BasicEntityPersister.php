@@ -319,6 +319,10 @@ class BasicEntityPersister implements EntityPersister
             $json = $conditions['json'];
             unset($conditions['json']);
         }
+        if (isset($conditions['entity'])) {
+            $json = $conditions['entity']->toArray($this->classMetadata);
+            unset($conditions['entity']);
+        }
 
         $query = $query = new Query($conditions);
 
