@@ -60,6 +60,7 @@ class Connection implements ConnectionInterface
     {
         if ($this->logger !== null) {
             $timestart = microtime(true);
+            $this->logger->addInfo('[RAPL] Webservice called : ' . $request->getMethod() . ' ' .$request->getPath() . ' [' . $page_load_time . 's]');
         }
         if ($this->stopwatch) {
             $this->stopwatch->start('rapl.rest');
@@ -72,7 +73,7 @@ class Connection implements ConnectionInterface
             $time = $timeend - $timestart;
             $page_load_time = number_format($time, 3);
 
-            $this->logger->addInfo('[RAPL] Webservice called : ' . $request->getMethod() . ' ' .$request->getPath() . ' [' . $page_load_time . 's]');
+            $this->logger->addInfo('[RAPL] Webservice called : [' . $page_load_time . 's]');
         }
         if ($this->stopwatch) {
             $this->stopwatch->stop('rapl.rest');
