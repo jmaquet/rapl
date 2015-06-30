@@ -83,6 +83,11 @@ class Serializer implements SerializerInterface
                 $data['id'] = -345;
             }
             $entityData = $this->mapFromSerialized($data);
+
+            if (count($entityData) == 0) {
+                return true;
+            }
+
             $entityData = $this->hydrateSingleEntity($entityData);
             return $entityData;
         }
