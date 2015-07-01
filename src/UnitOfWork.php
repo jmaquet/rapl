@@ -288,6 +288,11 @@ class UnitOfWork
         foreach ($data as $field => $value) {
             if ($classMetadata->hasField($field)) {
                 $classMetadata->setFieldValue($entity, $field, $value);
+            }else{
+                $fieldName = $classMetadata->getFieldName($field);
+                if($fieldName != $field){
+                    $classMetadata->setFieldValue($entity, $fieldName, $value);
+                }
             }
         }
 
