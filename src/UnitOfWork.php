@@ -271,6 +271,10 @@ class UnitOfWork
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->manager->getClassMetadata($className);
 
+        if (!isset($data['id'])) {
+            return null;
+        }
+
         $idHash = $data['id'];
         $id     = array('id' => $data['id']);
 
