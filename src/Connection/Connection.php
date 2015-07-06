@@ -58,9 +58,28 @@ class Connection implements ConnectionInterface
      */
     public function sendRequest(RequestInterface $request)
     {
+        $displayBody = false;
+        $bodyLength = 100;
+
         if ($this->logger !== null) {
             $timestart = microtime(true);
-            $this->logger->addInfo('[RAPL] Webservice called : ' . $request->getMethod() . ' ' .$request->getPath());
+            if ($displayBody && $request->getBody()) {
+                $body = ' ' . substr($request->getBody(), 0, $bodyLength);
+                if ($request->getBody()->getSize() > $bodyLength) {
+                    $body .= '...';
+                }
+            } else {
+                $body = '';
+            }
+
+            if ($request->getQuery()->count() > 0) {
+                $query = $request->getQuery()->toArray();
+                $params = '?' . implode('&', array_map(function ($v, $k) { return $k . '=' . $v; }, $query, array_flip($query)));
+            } else {
+                $params = '';
+            }
+
+            $this->logger->addInfo('[RAPL] Webservice called : ' . $request->getMethod() . ' ' .$request->getPath() . $params . $body);
         }
         if ($this->stopwatch) {
             $this->stopwatch->start('rapl.rest');
@@ -72,8 +91,17 @@ class Connection implements ConnectionInterface
             $timeend = microtime(true);
             $time = $timeend - $timestart;
             $page_load_time = number_format($time, 3);
+            if ($displayBody) {
+                $body = $response->getBody() ? ' ' . substr($response->getBody(), 0, $bodyLength) : null;
+                if ($response->getBody()->getSize() > $bodyLength) {
+                    $body .= '...';
+                }
+            } else {
+                $body = '';
+            }
 
-            $this->logger->addInfo('[RAPL] Webservice called : [' . $page_load_time . 's]');
+            $this->logger->addInfo('[RAPL] Webservice called : [' . $page_load_time . 's]' . $body);
+            $this->logger->addInfo('');
         }
         if ($this->stopwatch) {
             $this->stopwatch->stop('rapl.rest');
